@@ -1,5 +1,5 @@
 import pytest
-from src.game.scoring import calculate_score
+from backend.src.game.scoring import calculate_score
 
 
 @pytest.mark.parametrize(
