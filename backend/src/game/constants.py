@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from backend.src.models.shape import BlockBlastShape
 
 BASE_SHAPES = [
@@ -11,15 +13,17 @@ BASE_SHAPES = [
 ]
 
 
-def generate_library(bases: list[BlockBlastShape]) -> list[BlockBlastShape]:
-    library = []
+def generate_library(bases: list[BlockBlastShape]) -> dict[str, BlockBlastShape]:
+    library = defaultdict()
     for base in bases:
         current = base  # Shape is a frozen dataclass so can't manipulate directly
         seen_coords = []
+        rotation = 0
         for _ in range(4):
             if current.coordinates not in seen_coords:
                 seen_coords.append(current.coordinates)
-                library.append(current)
+                library[f"{current.name}_{rotation}"] = current
+                rotation += 1
             current = current.rotate()
 
     return library

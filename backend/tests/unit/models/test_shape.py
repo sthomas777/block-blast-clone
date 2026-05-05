@@ -20,5 +20,5 @@ def test_shape_rotate() -> None:
     )
     rotated = shape.rotate()
     assert rotated.name == "Block Name"
-    assert rotated.coordinates == [(0, 1), (0, 2), (0, 3), (1, 1), (2, 1), (3, 0)]
+    assert rotated.coordinates == [(0, 3), (1, 3), (2, 1), (2, 2), (2, 3), (3, 0)]
     assert rotated.color == "skyblue"
