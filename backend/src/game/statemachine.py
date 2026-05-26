@@ -4,8 +4,10 @@ from typing import Callable, Iterable
 
 type Action[Context] = Callable[[Context], None]
 
+
 class InvalidTransaction(Exception):
     pass
+
 
 @dataclass
 class StateMachine[State: Enum, Event: Enum, Context]:
@@ -29,7 +31,9 @@ class StateMachine[State: Enum, Event: Enum, Context]:
         action(context)
         return next_state
 
-    def transition(self, from_state: State | Iterable[State], event: Event, to_state: State):
+    def transition(
+        self, from_state: State | Iterable[State], event: Event, to_state: State
+    ):
         if not isinstance(from_state, Iterable):
             from_state = (from_state,)
 

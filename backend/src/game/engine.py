@@ -11,7 +11,9 @@ class GameEngine:
     shape_manager: ShapeManager
     scoring: ScoringEngine
 
-    def can_place_shape(self, shape: BlockBlastShape, position: tuple[int, int]) -> bool:
+    def can_place_shape(
+        self, shape: BlockBlastShape, position: tuple[int, int]
+    ) -> bool:
         return self.board.can_place_at(shape.coordinates, position)
 
     def place_shape(self, shape: BlockBlastShape, position: tuple[int, int]) -> None:
@@ -22,10 +24,10 @@ class GameEngine:
     def process_board(self) -> int:
         lines_cleared = self.board.clear_lines()
         self.scoring.add_lines_cleared(lines_cleared)
-        
+
         if not self.shape_manager.has_shapes():
             self.shape_manager.generate_new_set()
-        
+
         return lines_cleared
 
     def has_valid_moves(self) -> bool:

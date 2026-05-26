@@ -58,11 +58,11 @@ def play():
         shape = session.get_available_shapes()[shape_idx]
 
         row, col = get_position_input()
-        
+
         if not session.preview_shape(shape, (row, col)):
             print("Invalid placement!")
             continue
-        
+
         session.confirm_placement()
 
     display_board(session)

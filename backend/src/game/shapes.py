@@ -9,7 +9,9 @@ class ShapeManager:
     current_shapes: list[BlockBlastShape] = field(default_factory=list)
 
     def generate_new_set(self) -> list[BlockBlastShape]:
-        self.current_shapes = [choice(list(self.available_shapes.values())) for _ in range(3)]
+        self.current_shapes = [
+            choice(list(self.available_shapes.values())) for _ in range(3)
+        ]
         return self.current_shapes
 
     def remove_shape(self, shape: BlockBlastShape) -> None:

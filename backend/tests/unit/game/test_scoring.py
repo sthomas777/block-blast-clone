@@ -1,15 +1,33 @@
-import pytest
-from backend.src.game.scoring import calculate_score
+from backend.src.game.scoring import ScoringEngine
 
 
-@pytest.mark.parametrize(
-    "lines_cleared, expected_score",
-    [
-        pytest.param(1, 10),
-        pytest.param(2, 30),
-        pytest.param(3, 60),
-    ],
-)
-def test_calculate_score(lines_cleared: int, expected_score: int) -> None:
-    actual = calculate_score(lines_cleared)
-    assert actual == expected_score
+def test_init() -> None:
+    scoring = ScoringEngine()
+    assert scoring.score == 0
+
+
+def test_add_lines_cleared() -> None:
+    scoring = ScoringEngine()
+    points = scoring.add_lines_cleared(1)
+    assert points == 10
+    assert scoring.score == 10
+
+
+def test_add_multiple_lines() -> None:
+    scoring = ScoringEngine()
+    scoring.add_lines_cleared(2)
+    scoring.add_lines_cleared(3)
+    assert scoring.score == 50
+
+
+def test_get_score() -> None:
+    scoring = ScoringEngine()
+    scoring.add_lines_cleared(2)
+    assert scoring.get_score() == 20
+
+
+def test_reset() -> None:
+    scoring = ScoringEngine()
+    scoring.add_lines_cleared(5)
+    scoring.reset()
+    assert scoring.score == 0

@@ -15,7 +15,9 @@ class GameBoard:
     def grid(self) -> list[list[int]]:
         return self.board.grid
 
-    def can_place_at(self, shape_coords: list[tuple[int, int]], position: tuple[int, int]) -> bool:
+    def can_place_at(
+        self, shape_coords: list[tuple[int, int]], position: tuple[int, int]
+    ) -> bool:
         row_offset, col_offset = position
         for dr, dc in shape_coords:
             r, c = row_offset + dr, col_offset + dc
@@ -23,7 +25,9 @@ class GameBoard:
                 return False
         return True
 
-    def place_shape(self, shape_coords: list[tuple[int, int]], position: tuple[int, int]) -> None:
+    def place_shape(
+        self, shape_coords: list[tuple[int, int]], position: tuple[int, int]
+    ) -> None:
         row_offset, col_offset = position
         for dr, dc in shape_coords:
             self.board[row_offset + dr, col_offset + dc] = 1
@@ -31,7 +35,9 @@ class GameBoard:
     def clear_lines(self) -> int:
         row_indices = [i for i, row in enumerate(self.board) if all(row)]
         col_indices = [
-            j for j in range(self.cols) if all(self.board[r, j] for r in range(self.rows))
+            j
+            for j in range(self.cols)
+            if all(self.board[r, j] for r in range(self.rows))
         ]
 
         for r in row_indices:

@@ -34,26 +34,28 @@ class GameContext:
     current_position: tuple[int, int] = (0, 0)
 
 
-game_state_machine: StateMachine[
-    GameState,
-    GameEvent,
-    GameContext
-] = StateMachine()
+game_state_machine: StateMachine[GameState, GameEvent, GameContext] = StateMachine()
 
 
-@game_state_machine.transition(GameState.START, GameEvent.START_GAME, GameState.PLAYER_TURN)
+@game_state_machine.transition(
+    GameState.START, GameEvent.START_GAME, GameState.PLAYER_TURN
+)
 def start_game(context: GameContext) -> None:
     context.engine.shape_manager.generate_new_set()
 
 
-@game_state_machine.transition(GameState.SHAPE_PREVIEW, GameEvent.CONFIRM_PLACEMENT, GameState.LINES_CLEARED)
+@game_state_machine.transition(
+    GameState.SHAPE_PREVIEW, GameEvent.CONFIRM_PLACEMENT, GameState.LINES_CLEARED
+)
 def place_current_shape(context: GameContext) -> None:
     if context.current_shape is None:
         return
     context.engine.place_shape(context.current_shape, context.current_position)
 
 
-@game_state_machine.transition(GameState.LINES_CLEARED, GameEvent.LINES_CLEARED, GameState.CHECKING_BOARD)
+@game_state_machine.transition(
+    GameState.LINES_CLEARED, GameEvent.LINES_CLEARED, GameState.CHECKING_BOARD
+)
 def clear_lines_action(context: GameContext) -> None:
     context.engine.process_board()
 
@@ -67,11 +69,14 @@ class GameSession:
     engine: GameEngine = field(init=False)
     context: GameContext = field(init=False)
     state: GameState = field(default=GameState.START, init=False)
-    listeners: dict[str, list[Callable]] = field(default_factory=lambda: {
-        "shape_placed": [],
-        "lines_cleared": [],
-        "game_over": [],
-    }, init=False)
+    listeners: dict[str, list[Callable]] = field(
+        default_factory=lambda: {
+            "shape_placed": [],
+            "lines_cleared": [],
+            "game_over": [],
+        },
+        init=False,
+    )
 
     def __post_init__(self) -> None:
         self.board = GameBoard(rows=self.board_size[0], cols=self.board_size[1])
@@ -96,7 +101,7 @@ class GameSession:
     def preview_shape(self, shape: BlockBlastShape, position: tuple[int, int]) -> bool:
         if not self.engine.can_place_shape(shape, position):
             return False
-        
+
         self.context.current_shape = shape
         self.context.current_position = position
         self.state = GameState.SHAPE_PREVIEW
@@ -106,13 +111,15 @@ class GameSession:
         self.state = game_state_machine.handle(
             self.context, self.state, GameEvent.CONFIRM_PLACEMENT
         )
-        self.emit("shape_placed", self.context.current_shape, self.context.current_position)
-        
+        self.emit(
+            "shape_placed", self.context.current_shape, self.context.current_position
+        )
+
         self.state = game_state_machine.handle(
             self.context, self.state, GameEvent.LINES_CLEARED
         )
         self.emit("lines_cleared", self.engine.get_score())
-        
+
         if self.engine.has_valid_moves():
             self.state = GameState.PLAYER_TURN
         else:
