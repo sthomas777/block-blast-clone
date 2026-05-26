@@ -8,5 +8,16 @@ dependencies = []
 
 [dependency-groups]
 dev = [
+    "coverage>=7.14.0",
+    "pre-commit>=4.6.0",
     "pytest==9.0.3",
 ]
+
+[tool.setuptools.packages.find]
+# This tells Python: "Treat backend/src as the root for imports"
+where = ["backend"]
+include = ["*"]
+
+[tool.pytest.ini_options]
+# This helps pytest find the code without needing PYTHONPATH
+pythonpath = ["backend"]

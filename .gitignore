@@ -11,3 +11,6 @@ blockblast_backend.egg-info/
 .venv/
 .env
 .idea/
+.coverage
+.DS_Store
+
