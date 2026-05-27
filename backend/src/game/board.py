@@ -12,11 +12,13 @@ class GameBoard:
         self.board = BlockBlastBoard(rows=self.rows, cols=self.cols)
 
     @property
-    def grid(self) -> list[list[int]]:
+    def grid(self) -> list[list[int | str]]:
         return self.board.grid
 
     def can_place_at(
-        self, shape_coords: list[tuple[int, int]], position: tuple[int, int]
+        self,
+        shape_coords: list[tuple[int, int]],
+        position: tuple[int, int],
     ) -> bool:
         row_offset, col_offset = position
         for dr, dc in shape_coords:
@@ -26,7 +28,9 @@ class GameBoard:
         return True
 
     def place_shape(
-        self, shape_coords: list[tuple[int, int]], position: tuple[int, int]
+        self,
+        shape_coords: list[tuple[int, int]],
+        position: tuple[int, int],
     ) -> None:
         row_offset, col_offset = position
         for dr, dc in shape_coords:

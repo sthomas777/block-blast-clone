@@ -24,7 +24,9 @@ class BlockBlastBoard:
         # Existing coordinate logic
         if key not in self:
             raise IndexError(
-                "Index out of range. Board is %s by %s", self.rows, self.cols
+                "Index out of range. Board is %s by %s",
+                self.rows,
+                self.cols,
             )
         row, col = key
         return self.grid[row][col]
@@ -32,12 +34,14 @@ class BlockBlastBoard:
     def __setitem__(self, key: tuple[int, int] | int, value: int | str | list) -> None:
         if isinstance(key, int):
             if 0 <= key < self.rows:
+                # pyrefly: ignore [unsupported-operation]
                 self.grid[key] = value
             return
 
         if isinstance(key, tuple):
             if key in self:
                 row, col = key
+                # pyrefly: ignore [unsupported-operation]
                 self.grid[row][col] = value
 
     def __iter__(self) -> Iterator[list[int | str]]:
