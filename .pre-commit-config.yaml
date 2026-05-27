@@ -6,7 +6,6 @@ repos:
       - id: end-of-file-fixer
       - id: check-yaml
       - id: debug-statements
-      - id: double-quote-string-fixer
       - id: name-tests-test
       - id: requirements-txt-fixer
   - repo: https://github.com/astral-sh/uv-pre-commit
@@ -22,3 +21,10 @@ repos:
     hooks:
       - id: ruff-check
       - id: ruff-format
+  - repo: https://github.com/facebook/pyrefly-pre-commit
+    rev: 1.0.0
+    hooks:
+      - id: pyrefly-check
+        name: Pyrefly (type checking)
+        pass_filenames: false
+        language: system

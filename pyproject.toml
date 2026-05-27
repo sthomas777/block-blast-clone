@@ -4,12 +4,15 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "fastapi[standard]>=0.136.3",
+]
 
 [dependency-groups]
 dev = [
     "coverage>=7.14.0",
     "pre-commit>=4.6.0",
+    "pyrefly>=1.0.0",
     "pytest==9.0.3",
 ]
 
@@ -21,3 +24,9 @@ include = ["*"]
 [tool.pytest.ini_options]
 # This helps pytest find the code without needing PYTHONPATH
 pythonpath = ["backend"]
+
+[tool.pyrefly]
+project-includes = [
+    "**/*.py*",
+    "**/*.ipynb",
+]

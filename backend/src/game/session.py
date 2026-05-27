@@ -38,14 +38,18 @@ game_state_machine: StateMachine[GameState, GameEvent, GameContext] = StateMachi
 
 
 @game_state_machine.transition(
-    GameState.START, GameEvent.START_GAME, GameState.PLAYER_TURN
+    GameState.START,
+    GameEvent.START_GAME,
+    GameState.PLAYER_TURN,
 )
 def start_game(context: GameContext) -> None:
     context.engine.shape_manager.generate_new_set()
 
 
 @game_state_machine.transition(
-    GameState.SHAPE_PREVIEW, GameEvent.CONFIRM_PLACEMENT, GameState.LINES_CLEARED
+    GameState.SHAPE_PREVIEW,
+    GameEvent.CONFIRM_PLACEMENT,
+    GameState.LINES_CLEARED,
 )
 def place_current_shape(context: GameContext) -> None:
     if context.current_shape is None:
@@ -54,7 +58,9 @@ def place_current_shape(context: GameContext) -> None:
 
 
 @game_state_machine.transition(
-    GameState.LINES_CLEARED, GameEvent.LINES_CLEARED, GameState.CHECKING_BOARD
+    GameState.LINES_CLEARED,
+    GameEvent.LINES_CLEARED,
+    GameState.CHECKING_BOARD,
 )
 def clear_lines_action(context: GameContext) -> None:
     context.engine.process_board()
@@ -95,7 +101,9 @@ class GameSession:
 
     def start(self) -> None:
         self.state = game_state_machine.handle(
-            self.context, self.state, GameEvent.START_GAME
+            self.context,
+            self.state,
+            GameEvent.START_GAME,
         )
 
     def preview_shape(self, shape: BlockBlastShape, position: tuple[int, int]) -> bool:
@@ -109,14 +117,20 @@ class GameSession:
 
     def confirm_placement(self) -> None:
         self.state = game_state_machine.handle(
-            self.context, self.state, GameEvent.CONFIRM_PLACEMENT
+            self.context,
+            self.state,
+            GameEvent.CONFIRM_PLACEMENT,
         )
         self.emit(
-            "shape_placed", self.context.current_shape, self.context.current_position
+            "shape_placed",
+            self.context.current_shape,
+            self.context.current_position,
         )
 
         self.state = game_state_machine.handle(
-            self.context, self.state, GameEvent.LINES_CLEARED
+            self.context,
+            self.state,
+            GameEvent.LINES_CLEARED,
         )
         self.emit("lines_cleared", self.engine.get_score())
 
@@ -135,5 +149,5 @@ class GameSession:
     def get_available_shapes(self) -> list[BlockBlastShape]:
         return self.engine.shape_manager.get_current_shapes()
 
-    def get_board_grid(self) -> list[list[int]]:
+    def get_board_grid(self) -> list[list[int | str]]:
         return self.board.grid
