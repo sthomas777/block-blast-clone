@@ -32,16 +32,14 @@ class BlockBlastBoard:
         return self.grid[row][col]
 
     def __setitem__(self, key: tuple[int, int] | int, value: int | str | list) -> None:
-        if isinstance(key, int):
+        if isinstance(key, int) and isinstance(value, list):
             if 0 <= key < self.rows:
-                # pyrefly: ignore [unsupported-operation]
                 self.grid[key] = value
             return
 
-        if isinstance(key, tuple):
+        if isinstance(key, tuple) and isinstance(value, (int, str)):
             if key in self:
                 row, col = key
-                # pyrefly: ignore [unsupported-operation]
                 self.grid[row][col] = value
 
     def __iter__(self) -> Iterator[list[int | str]]:
