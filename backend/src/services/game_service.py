@@ -63,6 +63,10 @@ class GameService:
         if game_id not in self.games:
             raise InvalidGameID("Invalid game id")
         session = self.games[game_id]
+        if not (0 <= shape_index <= 2):
+            raise InvalidPosition(
+                f"Invalid shape has been chosen at position {shape_index}",
+            )
         shape = session.get_available_shapes()[shape_index]
         if not session.preview_shape(shape, (row, col)):
             raise InvalidPosition(f"Cannot place {shape.name} at position {(row, col)}")

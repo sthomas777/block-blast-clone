@@ -3,8 +3,6 @@ from pydantic import BaseModel, Field
 from backend.src.game.session import GameState
 from backend.src.models.shape import BlockBlastShape
 
-BlockBlastBoard = list[list[int | str]]
-
 
 class PlaceShapeRequest(BaseModel):
     shape_index: int = Field(
