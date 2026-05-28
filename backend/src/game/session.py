@@ -68,7 +68,7 @@ def clear_lines_action(context: GameContext) -> None:
 
 @dataclass
 class GameSession:
-    board_size: tuple[int, int] = (6, 6)
+    board_size: tuple[int, int] = (8, 8)
     board: GameBoard = field(init=False)
     shape_manager: ShapeManager = field(init=False)
     scoring: ScoringEngine = field(init=False)

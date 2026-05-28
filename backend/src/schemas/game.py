@@ -1,10 +1,7 @@
 from pydantic import BaseModel, Field
 
-from backend.src.game.board import GameBoard
 from backend.src.game.session import GameState
 from backend.src.models.shape import BlockBlastShape
-
-BlockBlastBoard = list[list[int | str]]
 
 
 class PlaceShapeRequest(BaseModel):
@@ -27,11 +24,15 @@ class PlaceShapeResponse(BaseModel):
 
 class GameStateResponse(BaseModel):
     game_id: str
-    grid: GameBoard
+    grid: list[list[int | str]]
     score: int
     shape: list[BlockBlastShape]
     status: GameState
+    game_over: bool
 
 
-class ErrorResponse(BaseModel):
-    message: str
+class GameStateMLResponse(BaseModel):
+    grid: list[list[int | str]]
+    score: int
+    shape: list[BlockBlastShape]
+    game_over: bool

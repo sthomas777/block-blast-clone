@@ -1,10 +1,11 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, Depends
 
 from backend.src.core.dependencies import get_game_service
 from backend.src.schemas.game import (
     PlaceShapeRequest,
     PlaceShapeResponse,
     GameStateResponse,
+    GameStateMLResponse,
 )
 from backend.src.services.game_service import GameService
 
@@ -23,8 +24,6 @@ def get_game(
     game_id: str,
     service: GameService = Depends(get_game_service),
 ) -> GameStateResponse:
-    if game_id not in service.games:
-        raise HTTPException(status_code=404, detail="Game not found")
     return service.get_game(game_id)
 
 
@@ -34,16 +33,17 @@ def place_shape(
     request: PlaceShapeRequest,
     service: GameService = Depends(get_game_service),
 ) -> PlaceShapeResponse:
-    if game_id not in service.games:
-        raise HTTPException(status_code=404, detail="Game not found")
-
-    placing_shape = service.place_shape(
+    return service.place_shape(
         game_id,
         request.shape_index,
         request.row,
         request.col,
     )
-    if not placing_shape:
-        raise HTTPException(status_code=400, detail="Invalid placement")
 
-    return placing_shape
+
+@router.get("/{game_id}/ml_state", response_model=GameStateMLResponse)
+def get_ml_state(
+    game_id: str,
+    service: GameService = Depends(get_game_service),
+) -> GameStateMLResponse:
+    return service.get_ml_state(game_id)
