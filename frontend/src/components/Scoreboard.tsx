@@ -4,8 +4,10 @@ interface ScoreboardProps {
 
 function Scoreboard({ score }: ScoreboardProps) {
   return (
-    <div>
-      <h2>Score: {score}</h2>
+    <div style={{ marginBottom: "24px", textAlign: "center" }}>
+      <h2 style={{ color: "#fff", fontSize: "28px", margin: "0", letterSpacing: "1px" }}>
+        Score: <span style={{ color: "#4fc3f7" }}>{score}</span>
+      </h2>
     </div>
   );
 }
