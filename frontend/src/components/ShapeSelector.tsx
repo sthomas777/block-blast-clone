@@ -9,7 +9,20 @@ interface ShapeSelectorProps {
 
 function ShapeSelector({ shapes, selectedIndex, onSelect }: ShapeSelectorProps) {
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", width: "300px", minHeight: "100px", justifyItems: "center" }}>
+    <div style={{
+      display: "flex",
+      justifyContent: "space-around",
+      alignItems: "center",
+      gap: "20px",
+      width: "100%",
+      minHeight: "100px",
+      padding: "10px",
+      backgroundColor: "#1a1a1a",
+      borderRadius: "12px",
+      border: "2px solid #333",
+      marginBottom: "24px",
+      boxSizing: "border-box",
+    }}>
       {shapes.map((shape, idx) =>
         shape ? (
           <ShapePreview
@@ -22,10 +35,9 @@ function ShapeSelector({ shapes, selectedIndex, onSelect }: ShapeSelectorProps) 
             color={parseInt(shape.color) || 1}
             isSelected={selectedIndex === idx}
             onShapeClick={() => onSelect(idx)}
+            shapeIndex={idx}
           />
-        ) : (
-          <div key={idx} />
-        )
+        ) : null
       )}
     </div>
   );
