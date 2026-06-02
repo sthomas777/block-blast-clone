@@ -23,22 +23,28 @@ function ShapeSelector({ shapes, selectedIndex, onSelect }: ShapeSelectorProps) 
       marginBottom: "24px",
       boxSizing: "border-box",
     }}>
-      {shapes.map((shape, idx) =>
-        shape ? (
+      {shapes.map((shape, idx) => {
+        if (!shape) return null;
+        
+        const maxRow = Math.max(...shape.coordinates.map(([r]) => r), 0);
+        const maxCol = Math.max(...shape.coordinates.map(([, c]) => c), 0);
+        
+        const grid: number[][] = Array(maxRow + 1).fill(null).map(() => Array(maxCol + 1).fill(0));
+        shape.coordinates.forEach(([r, c]) => {
+          grid[r][c] = 1;
+        });
+        
+        return (
           <ShapePreview
             key={idx}
-            shape={shape.coordinates.reduce((grid, [row, col]) => {
-              if (!grid[row]) grid[row] = [];
-              grid[row][col] = 1;
-              return grid;
-            }, [] as number[][]) || []}
-            color={parseInt(shape.color) || 1}
+            shape={grid}
+            color={shape.color}
             isSelected={selectedIndex === idx}
             onShapeClick={() => onSelect(idx)}
             shapeIndex={idx}
           />
-        ) : null
-      )}
+        );
+      })}
     </div>
   );
 }

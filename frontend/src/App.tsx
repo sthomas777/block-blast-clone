@@ -1,39 +1,95 @@
 import { useState } from "react";
-import { type GameStateResponse, type BlockBlastShape, GameState as GameStateEnum } from "./types/game";
+import { useGameApi } from "./hooks/useGameApi";
 import Grid from "./components/Grid";
 import Scoreboard from "./components/Scoreboard";
 import ShapeSelector from "./components/ShapeSelector";
 import GameOverOverlay from "./components/GameOverOverlay";
 
+function isValidPlacement(
+  grid: (number | string)[][],
+  shape: { coordinates: [number, number][] },
+  row: number,
+  col: number
+): boolean {
+  for (const [r, c] of shape.coordinates) {
+    const newRow = row + r;
+    const newCol = col + c;
+    if (newRow < 0 || newRow >= 8 || newCol < 0 || newCol >= 8) return false;
+    const cellValue = grid[newRow][newCol];
+    if (cellValue !== 0 && cellValue !== "0") return false;
+  }
+  return true;
+}
+
+function findNearbyPlacement(
+  grid: (number | string)[][],
+  shape: { coordinates: [number, number][] },
+  row: number,
+  col: number
+): { row: number; col: number } | null {
+  let bestPlacement = null;
+  let bestDistance = Infinity;
+
+  for (let dr = -1; dr <= 1; dr++) {
+    for (let dc = -1; dc <= 1; dc++) {
+      const testRow = row + dr;
+      const testCol = col + dc;
+      if (isValidPlacement(grid, shape, testRow, testCol)) {
+        const distance = Math.abs(dr) + Math.abs(dc);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestPlacement = { row: testRow, col: testCol };
+        }
+      }
+    }
+  }
+
+  return bestPlacement;
+}
+
 function App() {
+  const { gameState, isLoading, error, createGame, placeBlock } = useGameApi();
   const [selectedBlock, setSelectedBlock] = useState<number | null>(null);
   const [hoverPos, setHoverPos] = useState<{ row: number; col: number } | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [gameState, setGameState] = useState<GameStateResponse>({
-    game_id: "mock-001",
-    grid: Array(8).fill(null).map(() => Array(8).fill(0)),
-    score: 0,
-    shape: [
-      { name: "O", coordinates: [[0,0],[0,1],[1,0],[1,1]], color: "1" },
-      { name: "I", coordinates: [[0,0],[1,0],[2,0]], color: "2" },
-      { name: "L", coordinates: [[0,0],[0,1],[0,2]], color: "3" },
-    ],
-    status: GameStateEnum.PLAYER_TURN,
-    game_over: false,
-  });
 
-  const isValidPlacement = (row: number, col: number, shapeIdx: number | null) => {
+  if (!gameState) {
+    return (
+      <div style={{
+        minHeight: "100vh",
+        backgroundColor: "#1a1a1a",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "20px",
+        fontFamily: "system-ui, -apple-system, sans-serif",
+      }}>
+        <button 
+          onClick={createGame}
+          disabled={isLoading}
+          style={{
+            padding: "10px 20px",
+            backgroundColor: "#4CAF50",
+            color: "#fff",
+            border: "none",
+            borderRadius: "8px",
+            cursor: isLoading ? "not-allowed" : "pointer",
+            fontSize: "16px",
+            fontWeight: "bold",
+          }}
+        >
+          {isLoading ? "Creating..." : "New Game"}
+        </button>
+        {error && <p style={{ color: "#ff6b6b", marginTop: "20px" }}>{error}</p>}
+      </div>
+    );
+  }
+
+  const checkValidPlacement = (row: number, col: number, shapeIdx: number | null) => {
     if (shapeIdx === null) return false;
     const shape = gameState.shape[shapeIdx];
     if (!shape) return false;
-    
-    for (const [r, c] of shape.coordinates) {
-      const newRow = row + r;
-      const newCol = col + c;
-      if (newRow < 0 || newRow >= 8 || newCol < 0 || newCol >= 8) return false;
-      if (gameState.grid[newRow][newCol] !== 0) return false;
-    }
-    return true;
+    return isValidPlacement(gameState.grid, shape, row, col);
   };
 
   const getPreviewCells = (row: number, col: number, shapeIdx: number | null) => {
@@ -43,104 +99,26 @@ function App() {
     return shape.coordinates.map(([r, c]) => [row + r, col + c]);
   };
 
-  const handleCellClick = (row: number, col: number) => {
-    if (selectedBlock === null) return;
-    
-    if (!isValidPlacement(row, col, selectedBlock)) {
-      setError("Invalid placement!");
-      setTimeout(() => setError(null), 1000);
-      return;
-    }
-
-    setGameState(prev => {
-      const newGrid = prev.grid.map(r => [...r]);
-      const shape = prev.shape[selectedBlock];
-      const color = parseInt(shape.color) || 1;
-      
-      for (const [r, c] of shape.coordinates) {
-        newGrid[row + r][col + c] = color;
-      }
-      
-      const newShapes = [...prev.shape] as (BlockBlastShape | null)[];
-      newShapes[selectedBlock] = null;
-      
-      const isGridFull = newGrid.every(row => row.every(cell => cell !== 0));
-      
-      return {
-        ...prev,
-        grid: newGrid,
-        shape: newShapes,
-        status: isGridFull ? GameStateEnum.GAME_OVER : prev.status,
-        game_over: isGridFull,
-      } as GameStateResponse;
-    });
+  const handlePlaceBlock = async (row: number, col: number) => {
+    if (selectedBlock === null || gameState.game_over) return;
+    if (!checkValidPlacement(row, col, selectedBlock)) return;
+    await placeBlock(selectedBlock, row, col);
     setSelectedBlock(null);
   };
 
-  const handleDrop = (row: number, col: number, shapeIndex: number) => {
-    // Try exact position first
-    let validRow = row;
-    let validCol = col;
-    let found = false;
+  const handleDrop = async (row: number, col: number, shapeIndex: number) => {
+    if (gameState.game_over) return;
+    const shape = gameState.shape[shapeIndex];
+    if (!shape) return;
 
-    if (isValidPlacement(row, col, shapeIndex)) {
-      found = true;
-    } else {
-      // Check nearby positions (tolerance of 1 cell)
-      for (let dr = -1; dr <= 1; dr++) {
-        for (let dc = -1; dc <= 1; dc++) {
-          if (isValidPlacement(row + dr, col + dc, shapeIndex)) {
-            validRow = row + dr;
-            validCol = col + dc;
-            found = true;
-            break;
-          }
-        }
-        if (found) break;
-      }
-    }
-
-    if (!found) {
-      setError("Invalid placement!");
-      setTimeout(() => setError(null), 1000);
+    if (isValidPlacement(gameState.grid, shape, row, col)) {
+      await placeBlock(shapeIndex, row, col);
       return;
     }
 
-    setGameState(prev => {
-      const newGrid = prev.grid.map(r => [...r]);
-      const shape = prev.shape[shapeIndex];
-      const color = parseInt(shape.color) || 1;
-      
-      for (const [r, c] of shape.coordinates) {
-        newGrid[validRow + r][validCol + c] = color;
-      }
-      
-      const newShapes = [...prev.shape] as (BlockBlastShape | null)[];
-      newShapes[shapeIndex] = null;
-      
-      const isGridFull = newGrid.every(row => row.every(cell => cell !== 0));
-      
-      return {
-        ...prev,
-        grid: newGrid,
-        shape: newShapes,
-        status: isGridFull ? GameStateEnum.GAME_OVER : prev.status,
-        game_over: isGridFull,
-      } as GameStateResponse;
-    });
-  };
-
-  const handleNewGame = async () => {
-    try {
-      const response = await fetch("http://localhost:8000/game/new", { method: "POST" });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const data = await response.json();
-      setGameState(data);
-      setSelectedBlock(null);
-      setError(null);
-    } catch (err) {
-      console.error("Failed to create game:", err);
-      setError("Failed to create game");
+    const placement = findNearbyPlacement(gameState.grid, shape, row, col);
+    if (placement) {
+      await placeBlock(shapeIndex, placement.row, placement.col);
     }
   };
 
@@ -160,7 +138,8 @@ function App() {
       </h1>
       <div style={{ backgroundColor: "#2a2a2a", padding: "30px", borderRadius: "16px", boxShadow: "0 8px 32px rgba(0,0,0,0.5)" }}>
         <button 
-          onClick={handleNewGame}
+          onClick={createGame}
+          disabled={isLoading}
           style={{
             padding: "10px 20px",
             marginBottom: "20px",
@@ -168,41 +147,40 @@ function App() {
             color: "#fff",
             border: "none",
             borderRadius: "8px",
-            cursor: "pointer",
+            cursor: isLoading ? "not-allowed" : "pointer",
             fontSize: "16px",
             fontWeight: "bold",
           }}
         >
-          New Game
+          {isLoading ? "Creating..." : "New Game"}
         </button>
-        <Scoreboard score={gameState.score} />
-        <ShapeSelector 
-          shapes={gameState.shape} 
-          selectedIndex={selectedBlock}
-          onSelect={setSelectedBlock}
-        />
         {error && (
           <div style={{
             color: "#ff6b6b",
             marginTop: "15px",
             fontWeight: "bold",
             textAlign: "center",
-            animation: "shake 0.3s",
           }}>
             {error}
           </div>
         )}
+        <Scoreboard score={gameState.score} />
+        <ShapeSelector 
+          shapes={gameState.shape} 
+          selectedIndex={gameState.game_over ? null : selectedBlock}
+          onSelect={gameState.game_over ? () => {} : setSelectedBlock}
+        />
         <Grid 
           grid={gameState.grid} 
-          onCellClick={handleCellClick}
+          onCellClick={handlePlaceBlock}
           onCellHover={setHoverPos}
           onDrop={handleDrop}
           previewCells={hoverPos && selectedBlock !== null ? getPreviewCells(hoverPos.row, hoverPos.col, selectedBlock) : []}
-          isValidPreview={hoverPos && selectedBlock !== null ? isValidPlacement(hoverPos.row, hoverPos.col, selectedBlock) : false}
+          isValidPreview={hoverPos && selectedBlock !== null ? checkValidPlacement(hoverPos.row, hoverPos.col, selectedBlock) : false}
         />
       </div>
-      {gameState.status === GameStateEnum.GAME_OVER && (
-        <GameOverOverlay score={gameState.score} onNewGame={handleNewGame} />
+      {gameState.game_over && (
+        <GameOverOverlay score={gameState.score} onNewGame={createGame} />
       )}
       <style>{`
         body {

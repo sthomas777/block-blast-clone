@@ -31,10 +31,11 @@ class GameBoard:
         self,
         shape_coords: list[tuple[int, int]],
         position: tuple[int, int],
+        color: str = "1",
     ) -> None:
         row_offset, col_offset = position
         for dr, dc in shape_coords:
-            self.board[row_offset + dr, col_offset + dc] = 1
+            self.board[row_offset + dr, col_offset + dc] = color
 
     def clear_lines(self) -> int:
         row_indices = [i for i, row in enumerate(self.board) if all(row)]
