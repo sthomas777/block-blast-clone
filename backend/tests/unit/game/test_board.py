@@ -25,8 +25,8 @@ def test_place_shape() -> None:
     board = GameBoard(rows=8, cols=8)
     coords = [(0, 0), (0, 1)]
     board.place_shape(coords, (0, 0))
-    assert board.grid[0][0] == 1
-    assert board.grid[0][1] == 1
+    assert board.grid[0][0] == "1"
+    assert board.grid[0][1] == "1"
 
 
 def test_clear_lines_no_lines() -> None:
@@ -51,3 +51,11 @@ def test_clear_lines_full_column() -> None:
     assert cleared == 1
     for r in range(8):
         assert board.board[r, 0] == 0
+
+
+def test_place_shape_with_color() -> None:
+    board = GameBoard(rows=8, cols=8)
+    coords = [(0, 0), (0, 1)]
+    board.place_shape(coords, (0, 0), "blue")
+    assert board.grid[0][0] == "blue"
+    assert board.grid[0][1] == "blue"

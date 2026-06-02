@@ -12,13 +12,15 @@ class GameEngine:
     scoring: ScoringEngine
 
     def can_place_shape(
-        self, shape: BlockBlastShape, position: tuple[int, int]
+        self,
+        shape: BlockBlastShape,
+        position: tuple[int, int],
     ) -> bool:
         return self.board.can_place_at(shape.coordinates, position)
 
     def place_shape(self, shape: BlockBlastShape, position: tuple[int, int]) -> None:
         if self.can_place_shape(shape, position):
-            self.board.place_shape(shape.coordinates, position)
+            self.board.place_shape(shape.coordinates, position, shape.color)
             self.shape_manager.remove_shape(shape)
 
     def process_board(self) -> int:

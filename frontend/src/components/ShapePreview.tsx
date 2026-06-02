@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { BLOCK_COLORS } from "../utils/colors";
 
 interface ShapePreviewProps {
   shape: number[][];
-  color: number;
+  color: string;
   isSelected: boolean;
   onShapeClick: () => void;
   shapeIndex: number;
@@ -84,7 +83,7 @@ function ShapePreview({ shape, color, isSelected, shapeIndex }: ShapePreviewProp
                 style={{
                   width: `${cellSize}px`,
                   height: `${cellSize}px`,
-                  backgroundColor: cell === 1 ? BLOCK_COLORS[color] : "transparent",
+                  backgroundColor: cell === 1 ? color : "transparent",
                   borderRadius: "4px",
                   boxShadow: cell === 1 ? "0 2px 4px rgba(0,0,0,0.3)" : "none",
                 }}
@@ -122,7 +121,7 @@ function ShapePreview({ shape, color, isSelected, shapeIndex }: ShapePreviewProp
                   style={{
                     width: `${dragCellSize}px`,
                     height: `${dragCellSize}px`,
-                    backgroundColor: cell === 1 ? BLOCK_COLORS[color] : "transparent",
+                    backgroundColor: cell === 1 ? color : "transparent",
                     borderRadius: "4px",
                     boxShadow: cell === 1 ? "0 2px 8px rgba(0,0,0,0.5)" : "none",
                   }}
