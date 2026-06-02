@@ -130,21 +130,18 @@ function App() {
     });
   };
 
-  const handleNewGame = () => {
-    setGameState({
-      game_id: "mock-001",
-      grid: Array(8).fill(null).map(() => Array(8).fill(0)),
-      score: 0,
-      shape: [
-        { name: "O", coordinates: [[0,0],[0,1],[1,0],[1,1]], color: "1" },
-        { name: "I", coordinates: [[0,0],[1,0],[2,0]], color: "2" },
-        { name: "L", coordinates: [[0,0],[0,1],[0,2]], color: "3" },
-      ],
-      status: GameStateEnum.PLAYER_TURN,
-      game_over: false,
-    });
-    setSelectedBlock(null);
-    setError(null);
+  const handleNewGame = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/game/new", { method: "POST" });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
+      setGameState(data);
+      setSelectedBlock(null);
+      setError(null);
+    } catch (err) {
+      console.error("Failed to create game:", err);
+      setError("Failed to create game");
+    }
   };
 
   return (
@@ -162,6 +159,22 @@ function App() {
         Block Blast
       </h1>
       <div style={{ backgroundColor: "#2a2a2a", padding: "30px", borderRadius: "16px", boxShadow: "0 8px 32px rgba(0,0,0,0.5)" }}>
+        <button 
+          onClick={handleNewGame}
+          style={{
+            padding: "10px 20px",
+            marginBottom: "20px",
+            backgroundColor: "#4CAF50",
+            color: "#fff",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontSize: "16px",
+            fontWeight: "bold",
+          }}
+        >
+          New Game
+        </button>
         <Scoreboard score={gameState.score} />
         <ShapeSelector 
           shapes={gameState.shape} 
