@@ -1,13 +1,4 @@
-export const GameState = {
-START: "START",
-PLAYER_TURN: "PLAYER_TURN",
-SHAPE_PREVIEW: "SHAPE_PREVIEW",
-LINES_CLEARED: "LINES_CLEARED",
-CHECKING_BOARD: "CHECKING_BOARD",
-GAME_OVER: "GAME_OVER",
-} as const;
-
-export type GameState = typeof GameState[keyof typeof GameState];
+export type GameState = "START" | "PLAYER_TURN" | "SHAPE_PREVIEW" | "LINES_CLEARED" | "CHECKING_BOARD" | "GAME_OVER";
 
 
 export interface BlockBlastShape {
@@ -18,7 +9,7 @@ export interface BlockBlastShape {
 
 export interface GameStateResponse {
   game_id: string;
-  grid: number[][];
+  grid: (number | string)[][];
   score: number;
   shape: BlockBlastShape[];
   status: GameState;

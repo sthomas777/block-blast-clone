@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { setGlobalDragShape, clearGlobalDragShape } from "./Grid";
 
 interface ShapePreviewProps {
   shape: number[][];
@@ -30,11 +31,21 @@ function ShapePreview({ shape, color, isSelected, shapeIndex }: ShapePreviewProp
   const dragGap = 8;
 
   const handleDragStart = (e: React.DragEvent) => {
+    const coords = shape.map((row, r) => 
+      row.map((cell, c) => cell === 1 ? [r, c] : null).filter(Boolean)
+    ).flat() as [number, number][];
+    
     e.dataTransfer!.effectAllowed = "move";
     e.dataTransfer!.setData("shapeIndex", shapeIndex.toString());
-    e.dataTransfer!.setData("shapeCoords", JSON.stringify(shape.map((row, r) => 
-      row.map((cell, c) => cell === 1 ? [r, c] : null).filter(Boolean)
-    ).flat()));
+    e.dataTransfer!.setData("shapeCoords", JSON.stringify(coords));
+    
+    // Set global drag shape for preview
+    setGlobalDragShape(shapeIndex, coords);
+    
+    // Create a transparent drag image to replace the default
+    const emptyImage = new Image();
+    e.dataTransfer!.setDragImage(emptyImage, 0, 0);
+    
     setDragPos({ x: e.clientX, y: e.clientY });
     setIsDragging(true);
   };
@@ -47,6 +58,7 @@ function ShapePreview({ shape, color, isSelected, shapeIndex }: ShapePreviewProp
 
   const handleDragEnd = () => {
     setIsDragging(false);
+    clearGlobalDragShape();
   };
 
   return (
@@ -58,7 +70,7 @@ function ShapePreview({ shape, color, isSelected, shapeIndex }: ShapePreviewProp
         onDragEnd={handleDragEnd}
         style={{
           padding: "6px",
-          border: isSelected ? "3px solid #4fc3f7" : "2px solid #444",
+          border: isSelected ? "3px solid #4fc3f7" : "none",
           borderRadius: "8px",
           cursor: "grab",
           display: "inline-block",

@@ -1,10 +1,51 @@
 import { useState } from "react";
-import { GameState as GameStateEnum } from "./types/game";
 import { useGameApi } from "./hooks/useGameApi";
 import Grid from "./components/Grid";
 import Scoreboard from "./components/Scoreboard";
 import ShapeSelector from "./components/ShapeSelector";
 import GameOverOverlay from "./components/GameOverOverlay";
+
+function isValidPlacement(
+  grid: (number | string)[][],
+  shape: { coordinates: [number, number][] },
+  row: number,
+  col: number
+): boolean {
+  for (const [r, c] of shape.coordinates) {
+    const newRow = row + r;
+    const newCol = col + c;
+    if (newRow < 0 || newRow >= 8 || newCol < 0 || newCol >= 8) return false;
+    const cellValue = grid[newRow][newCol];
+    if (cellValue !== 0 && cellValue !== "0") return false;
+  }
+  return true;
+}
+
+function findNearbyPlacement(
+  grid: (number | string)[][],
+  shape: { coordinates: [number, number][] },
+  row: number,
+  col: number
+): { row: number; col: number } | null {
+  let bestPlacement = null;
+  let bestDistance = Infinity;
+
+  for (let dr = -1; dr <= 1; dr++) {
+    for (let dc = -1; dc <= 1; dc++) {
+      const testRow = row + dr;
+      const testCol = col + dc;
+      if (isValidPlacement(grid, shape, testRow, testCol)) {
+        const distance = Math.abs(dr) + Math.abs(dc);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestPlacement = { row: testRow, col: testCol };
+        }
+      }
+    }
+  }
+
+  return bestPlacement;
+}
 
 function App() {
   const { gameState, isLoading, error, createGame, placeBlock } = useGameApi();
@@ -44,18 +85,11 @@ function App() {
     );
   }
 
-  const isValidPlacement = (row: number, col: number, shapeIdx: number | null) => {
+  const checkValidPlacement = (row: number, col: number, shapeIdx: number | null) => {
     if (shapeIdx === null) return false;
     const shape = gameState.shape[shapeIdx];
     if (!shape) return false;
-    
-    for (const [r, c] of shape.coordinates) {
-      const newRow = row + r;
-      const newCol = col + c;
-      if (newRow < 0 || newRow >= 8 || newCol < 0 || newCol >= 8) return false;
-      if (gameState.grid[newRow][newCol] !== 0) return false;
-    }
-    return true;
+    return isValidPlacement(gameState.grid, shape, row, col);
   };
 
   const getPreviewCells = (row: number, col: number, shapeIdx: number | null) => {
@@ -67,35 +101,24 @@ function App() {
 
   const handlePlaceBlock = async (row: number, col: number) => {
     if (selectedBlock === null || gameState.game_over) return;
-    if (!isValidPlacement(row, col, selectedBlock)) return;
+    if (!checkValidPlacement(row, col, selectedBlock)) return;
     await placeBlock(selectedBlock, row, col);
     setSelectedBlock(null);
   };
 
   const handleDrop = async (row: number, col: number, shapeIndex: number) => {
     if (gameState.game_over) return;
-    let validRow = row;
-    let validCol = col;
-    let found = false;
+    const shape = gameState.shape[shapeIndex];
+    if (!shape) return;
 
-    if (isValidPlacement(row, col, shapeIndex)) {
-      found = true;
-    } else {
-      for (let dr = -1; dr <= 1; dr++) {
-        for (let dc = -1; dc <= 1; dc++) {
-          if (isValidPlacement(row + dr, col + dc, shapeIndex)) {
-            validRow = row + dr;
-            validCol = col + dc;
-            found = true;
-            break;
-          }
-        }
-        if (found) break;
-      }
+    if (isValidPlacement(gameState.grid, shape, row, col)) {
+      await placeBlock(shapeIndex, row, col);
+      return;
     }
 
-    if (found) {
-      await placeBlock(shapeIndex, validRow, validCol);
+    const placement = findNearbyPlacement(gameState.grid, shape, row, col);
+    if (placement) {
+      await placeBlock(shapeIndex, placement.row, placement.col);
     }
   };
 
@@ -153,7 +176,7 @@ function App() {
           onCellHover={setHoverPos}
           onDrop={handleDrop}
           previewCells={hoverPos && selectedBlock !== null ? getPreviewCells(hoverPos.row, hoverPos.col, selectedBlock) : []}
-          isValidPreview={hoverPos && selectedBlock !== null ? isValidPlacement(hoverPos.row, hoverPos.col, selectedBlock) : false}
+          isValidPreview={hoverPos && selectedBlock !== null ? checkValidPlacement(hoverPos.row, hoverPos.col, selectedBlock) : false}
         />
       </div>
       {gameState.game_over && (
