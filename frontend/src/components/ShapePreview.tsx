@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { setGlobalDragShape, clearGlobalDragShape } from "./Grid";
+import { useDrag } from "../contexts/DragContext";
 
 interface ShapePreviewProps {
   shape: number[][];
@@ -9,13 +9,19 @@ interface ShapePreviewProps {
   shapeIndex: number;
 }
 
-function ShapePreview({ shape, color, isSelected, shapeIndex }: ShapePreviewProps) {
+function ShapePreview({
+  shape,
+  color,
+  isSelected,
+  shapeIndex,
+}: ShapePreviewProps) {
+  const { setCoords } = useDrag();
   const [isDragging, setIsDragging] = useState(false);
   const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
-  
+
   let maxRow = 0;
   let maxCol = 0;
-  
+
   for (const row of shape) {
     for (let i = 0; i < row.length; i++) {
       if (row[i] === 1) {
@@ -31,21 +37,22 @@ function ShapePreview({ shape, color, isSelected, shapeIndex }: ShapePreviewProp
   const dragGap = 8;
 
   const handleDragStart = (e: React.DragEvent) => {
-    const coords = shape.map((row, r) => 
-      row.map((cell, c) => cell === 1 ? [r, c] : null).filter(Boolean)
-    ).flat() as [number, number][];
-    
+    const coords = shape
+      .map((row, r) =>
+        row.map((cell, c) => (cell === 1 ? [r, c] : null)).filter(Boolean),
+      )
+      .flat() as [number, number][];
+
     e.dataTransfer!.effectAllowed = "move";
     e.dataTransfer!.setData("shapeIndex", shapeIndex.toString());
     e.dataTransfer!.setData("shapeCoords", JSON.stringify(coords));
-    
-    // Set global drag shape for preview
-    setGlobalDragShape(shapeIndex, coords);
-    
+
+    setCoords(coords);
+
     // Create a transparent drag image to replace the default
     const emptyImage = new Image();
     e.dataTransfer!.setDragImage(emptyImage, 0, 0);
-    
+
     setDragPos({ x: e.clientX, y: e.clientY });
     setIsDragging(true);
   };
@@ -58,7 +65,7 @@ function ShapePreview({ shape, color, isSelected, shapeIndex }: ShapePreviewProp
 
   const handleDragEnd = () => {
     setIsDragging(false);
-    clearGlobalDragShape();
+    setCoords(null);
   };
 
   return (
@@ -75,7 +82,9 @@ function ShapePreview({ shape, color, isSelected, shapeIndex }: ShapePreviewProp
           cursor: "grab",
           display: "inline-block",
           opacity: isDragging ? 0 : 1,
-          backgroundColor: isSelected ? "rgba(79, 195, 247, 0.15)" : "rgba(255, 255, 255, 0.05)",
+          backgroundColor: isSelected
+            ? "rgba(79, 195, 247, 0.15)"
+            : "rgba(255, 255, 255, 0.05)",
           transition: "all 0.2s ease",
           boxShadow: isSelected ? "0 0 12px rgba(79, 195, 247, 0.3)" : "none",
           userSelect: "none",
@@ -100,7 +109,7 @@ function ShapePreview({ shape, color, isSelected, shapeIndex }: ShapePreviewProp
                   boxShadow: cell === 1 ? "0 2px 4px rgba(0,0,0,0.3)" : "none",
                 }}
               />
-            ))
+            )),
           )}
         </div>
       </div>
@@ -109,8 +118,8 @@ function ShapePreview({ shape, color, isSelected, shapeIndex }: ShapePreviewProp
         <div
           style={{
             position: "fixed",
-            left: `${dragPos.x - (maxCol + 1) * dragCellSize / 2 - dragGap * maxCol / 2}px`,
-            top: `${dragPos.y - (maxRow + 1) * dragCellSize / 2 - dragGap * maxRow / 2}px`,
+            left: `${dragPos.x - ((maxCol + 1) * dragCellSize) / 2 - (dragGap * maxCol) / 2}px`,
+            top: `${dragPos.y - ((maxRow + 1) * dragCellSize) / 2 - (dragGap * maxRow) / 2}px`,
             pointerEvents: "none",
             zIndex: 10000,
             padding: "6px",
@@ -135,10 +144,11 @@ function ShapePreview({ shape, color, isSelected, shapeIndex }: ShapePreviewProp
                     height: `${dragCellSize}px`,
                     backgroundColor: cell === 1 ? color : "transparent",
                     borderRadius: "4px",
-                    boxShadow: cell === 1 ? "0 2px 8px rgba(0,0,0,0.5)" : "none",
+                    boxShadow:
+                      cell === 1 ? "0 2px 8px rgba(0,0,0,0.5)" : "none",
                   }}
                 />
-              ))
+              )),
             )}
           </div>
         </div>

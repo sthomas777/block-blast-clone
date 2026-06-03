@@ -26,3 +26,10 @@ repos:
         name: Pyrefly (type checking)
         pass_filenames: false
         language: system
+  - repo: local
+    hooks:
+      - id: prettier
+        name: prettier
+        entry: npx prettier . --write
+        language: node
+        additional_dependencies: ["prettier@latest"]

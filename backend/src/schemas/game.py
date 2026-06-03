@@ -14,14 +14,6 @@ class PlaceShapeRequest(BaseModel):
     col: int = Field(ge=0, le=7, description="Grid column (0=left, 7=right)")
 
 
-class PlaceShapeResponse(BaseModel):
-    game_id: str
-    status: GameState
-    shape: str
-    placement: tuple[int, int]
-    score: int
-
-
 class GameStateResponse(BaseModel):
     game_id: str
     grid: list[list[int | str]]
