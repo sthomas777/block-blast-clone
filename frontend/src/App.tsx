@@ -9,7 +9,7 @@ function isValidPlacement(
   grid: (number | string)[][],
   shape: { coordinates: [number, number][] },
   row: number,
-  col: number
+  col: number,
 ): boolean {
   for (const [r, c] of shape.coordinates) {
     const newRow = row + r;
@@ -25,7 +25,7 @@ function findNearbyPlacement(
   grid: (number | string)[][],
   shape: { coordinates: [number, number][] },
   row: number,
-  col: number
+  col: number,
 ): { row: number; col: number } | null {
   let bestPlacement = null;
   let bestDistance = Infinity;
@@ -50,21 +50,25 @@ function findNearbyPlacement(
 function App() {
   const { gameState, isLoading, error, createGame, placeBlock } = useGameApi();
   const [selectedBlock, setSelectedBlock] = useState<number | null>(null);
-  const [hoverPos, setHoverPos] = useState<{ row: number; col: number } | null>(null);
+  const [hoverPos, setHoverPos] = useState<{ row: number; col: number } | null>(
+    null,
+  );
 
   if (!gameState) {
     return (
-      <div style={{
-        minHeight: "100vh",
-        backgroundColor: "#1a1a1a",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "20px",
-        fontFamily: "system-ui, -apple-system, sans-serif",
-      }}>
-        <button 
+      <div
+        style={{
+          minHeight: "100vh",
+          backgroundColor: "#1a1a1a",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "20px",
+          fontFamily: "system-ui, -apple-system, sans-serif",
+        }}
+      >
+        <button
           onClick={createGame}
           disabled={isLoading}
           style={{
@@ -80,19 +84,29 @@ function App() {
         >
           {isLoading ? "Creating..." : "New Game"}
         </button>
-        {error && <p style={{ color: "#ff6b6b", marginTop: "20px" }}>{error}</p>}
+        {error && (
+          <p style={{ color: "#ff6b6b", marginTop: "20px" }}>{error}</p>
+        )}
       </div>
     );
   }
 
-  const checkValidPlacement = (row: number, col: number, shapeIdx: number | null) => {
+  const checkValidPlacement = (
+    row: number,
+    col: number,
+    shapeIdx: number | null,
+  ) => {
     if (shapeIdx === null) return false;
     const shape = gameState.shape[shapeIdx];
     if (!shape) return false;
     return isValidPlacement(gameState.grid, shape, row, col);
   };
 
-  const getPreviewCells = (row: number, col: number, shapeIdx: number | null) => {
+  const getPreviewCells = (
+    row: number,
+    col: number,
+    shapeIdx: number | null,
+  ) => {
     if (shapeIdx === null) return [];
     const shape = gameState.shape[shapeIdx];
     if (!shape) return [];
@@ -123,21 +137,37 @@ function App() {
   };
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      backgroundColor: "#1a1a1a",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      padding: "20px",
-      fontFamily: "system-ui, -apple-system, sans-serif",
-    }}>
-      <h1 style={{ color: "#fff", fontSize: "48px", marginBottom: "30px", textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        backgroundColor: "#1a1a1a",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "20px",
+        fontFamily: "system-ui, -apple-system, sans-serif",
+      }}
+    >
+      <h1
+        style={{
+          color: "#fff",
+          fontSize: "48px",
+          marginBottom: "30px",
+          textShadow: "0 2px 8px rgba(0,0,0,0.5)",
+        }}
+      >
         Block Blast
       </h1>
-      <div style={{ backgroundColor: "#2a2a2a", padding: "30px", borderRadius: "16px", boxShadow: "0 8px 32px rgba(0,0,0,0.5)" }}>
-        <button 
+      <div
+        style={{
+          backgroundColor: "#2a2a2a",
+          padding: "30px",
+          borderRadius: "16px",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+        }}
+      >
+        <button
           onClick={createGame}
           disabled={isLoading}
           style={{
@@ -155,28 +185,38 @@ function App() {
           {isLoading ? "Creating..." : "New Game"}
         </button>
         {error && (
-          <div style={{
-            color: "#ff6b6b",
-            marginTop: "15px",
-            fontWeight: "bold",
-            textAlign: "center",
-          }}>
+          <div
+            style={{
+              color: "#ff6b6b",
+              marginTop: "15px",
+              fontWeight: "bold",
+              textAlign: "center",
+            }}
+          >
             {error}
           </div>
         )}
         <Scoreboard score={gameState.score} />
-        <ShapeSelector 
-          shapes={gameState.shape} 
+        <ShapeSelector
+          shapes={gameState.shape}
           selectedIndex={gameState.game_over ? null : selectedBlock}
           onSelect={gameState.game_over ? () => {} : setSelectedBlock}
         />
-        <Grid 
-          grid={gameState.grid} 
+        <Grid
+          grid={gameState.grid}
           onCellClick={handlePlaceBlock}
           onCellHover={setHoverPos}
           onDrop={handleDrop}
-          previewCells={hoverPos && selectedBlock !== null ? getPreviewCells(hoverPos.row, hoverPos.col, selectedBlock) : []}
-          isValidPreview={hoverPos && selectedBlock !== null ? checkValidPlacement(hoverPos.row, hoverPos.col, selectedBlock) : false}
+          previewCells={
+            hoverPos && selectedBlock !== null
+              ? getPreviewCells(hoverPos.row, hoverPos.col, selectedBlock)
+              : []
+          }
+          isValidPreview={
+            hoverPos && selectedBlock !== null
+              ? checkValidPlacement(hoverPos.row, hoverPos.col, selectedBlock)
+              : false
+          }
         />
       </div>
       {gameState.game_over && (

@@ -32,7 +32,9 @@ export function useGameApi(): UseGameApiReturn {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await apiFetch<GameStateResponse>("/game/new", { method: "POST" });
+      const data = await apiFetch<GameStateResponse>("/game/new", {
+        method: "POST",
+      });
       setGameState(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create game");
@@ -50,7 +52,9 @@ export function useGameApi(): UseGameApiReturn {
         method: "POST",
         body: JSON.stringify({ shape_index: blockIndex, row, col }),
       });
-      const data = await apiFetch<GameStateResponse>(`/game/${gameState.game_id}`);
+      const data = await apiFetch<GameStateResponse>(
+        `/game/${gameState.game_id}`,
+      );
       setGameState(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to place block");

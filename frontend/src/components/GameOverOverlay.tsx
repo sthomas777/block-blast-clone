@@ -32,7 +32,8 @@ export default function GameOverOverlay({ score, onNewGame }: GameOverProps) {
           Game Over
         </h2>
         <p style={{ fontSize: "24px", marginBottom: "30px", color: "#666" }}>
-          Final Score: <span style={{ fontWeight: "bold", color: "#2196F3" }}>{score}</span>
+          Final Score:{" "}
+          <span style={{ fontWeight: "bold", color: "#2196F3" }}>{score}</span>
         </p>
         <button
           onClick={onNewGame}

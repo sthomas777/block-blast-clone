@@ -1,5 +1,10 @@
-export type GameState = "START" | "PLAYER_TURN" | "SHAPE_PREVIEW" | "LINES_CLEARED" | "CHECKING_BOARD" | "GAME_OVER";
-
+export type GameState =
+  | "START"
+  | "PLAYER_TURN"
+  | "SHAPE_PREVIEW"
+  | "LINES_CLEARED"
+  | "CHECKING_BOARD"
+  | "GAME_OVER";
 
 export interface BlockBlastShape {
   name: string;
