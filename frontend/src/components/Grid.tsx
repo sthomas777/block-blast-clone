@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Cell from "./Cell";
+import { useDrag } from "../contexts/DragContext";
 
 interface GridProps {
   grid: (number | string)[][];
@@ -7,21 +8,6 @@ interface GridProps {
   onCellHover?: (pos: { row: number; col: number } | null) => void;
   onDrop?: (row: number, col: number, shapeIndex: number) => void;
   previewCells?: number[][];
-  isValidPreview?: boolean;
-}
-
-// Global to track dragging shape across components
-let globalDragShapeCoords: [number, number][] | null = null;
-
-export function setGlobalDragShape(
-  _shapeIndex: number,
-  coords: [number, number][],
-) {
-  globalDragShapeCoords = coords;
-}
-
-export function clearGlobalDragShape() {
-  globalDragShapeCoords = null;
 }
 
 function Grid({
@@ -30,8 +16,8 @@ function Grid({
   onCellHover,
   onDrop,
   previewCells = [],
-  isValidPreview = false,
 }: GridProps) {
+  const { coords: globalDragShapeCoords, setCoords } = useDrag();
   const previewSet = new Set(previewCells.map(([r, c]) => `${r}-${c}`));
   const [dragOverCell, setDragOverCell] = useState<{
     row: number;
@@ -60,7 +46,7 @@ function Grid({
     const coordsData = e.dataTransfer.getData("shapeCoords");
     if (coordsData) {
       try {
-        globalDragShapeCoords = JSON.parse(coordsData);
+        setCoords(JSON.parse(coordsData));
       } catch {
         // Ignore parse errors
       }
@@ -83,14 +69,17 @@ function Grid({
       const centerOffsetRow = Math.floor((maxRow - minRow) / 2);
       const centerOffsetCol = Math.floor((maxCol - minCol) / 2);
 
-      // Adjust drop position so shape centers on dropped cell
-      const anchorRow = rowIdx - minRow - centerOffsetRow;
-      const anchorCol = colIdx - minCol - centerOffsetCol;
+      // Adjust drop position so shape centers on dropped cell, clamped to valid bounds
+      let anchorRow = rowIdx - minRow - centerOffsetRow;
+      let anchorCol = colIdx - minCol - centerOffsetCol;
+
+      anchorRow = Math.max(0, Math.min(anchorRow, 7 - maxRow));
+      anchorCol = Math.max(0, Math.min(anchorCol, 7 - maxCol));
 
       onDrop?.(anchorRow, anchorCol, shapeIndex);
     }
     setDragOverCell(null);
-    clearGlobalDragShape();
+    setCoords(null);
   };
 
   // Calculate which cells the dragged shape would occupy
@@ -152,11 +141,7 @@ function Grid({
                 value={value}
                 onCellClick={() => onCellClick?.(rowIdx, colIdx)}
                 previewColor={
-                  isPreview
-                    ? isValidPreview
-                      ? "rgba(100, 200, 100, 0.5)"
-                      : "rgba(255, 0, 0, 0.5)"
-                    : undefined
+                  isPreview ? "rgba(100, 200, 255, 0.5)" : undefined
                 }
               />
             </div>

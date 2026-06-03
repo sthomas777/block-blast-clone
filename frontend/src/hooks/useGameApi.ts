@@ -9,8 +9,19 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
     ...options,
   });
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.detail || `HTTP ${response.status}`);
+    let errorMessage = `HTTP ${response.status}`;
+    try {
+      const errorData = await response.json();
+      if (errorData.detail) {
+        errorMessage =
+          typeof errorData.detail === "string"
+            ? errorData.detail
+            : errorData.detail[0]?.msg || errorMessage;
+      }
+    } catch {
+      // Use default error message
+    }
+    throw new Error(errorMessage);
   }
   return response.json();
 }
@@ -37,7 +48,9 @@ export function useGameApi(): UseGameApiReturn {
       });
       setGameState(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create game");
+      const errorMessage =
+        err instanceof Error ? err.message : JSON.stringify(err);
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -48,16 +61,18 @@ export function useGameApi(): UseGameApiReturn {
     setIsLoading(true);
     setError(null);
     try {
-      await apiFetch(`/game/${gameState.game_id}/place`, {
-        method: "POST",
-        body: JSON.stringify({ shape_index: blockIndex, row, col }),
-      });
       const data = await apiFetch<GameStateResponse>(
-        `/game/${gameState.game_id}`,
+        `/game/${gameState.game_id}/place`,
+        {
+          method: "POST",
+          body: JSON.stringify({ shape_index: blockIndex, row, col }),
+        },
       );
       setGameState(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to place block");
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to place block";
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

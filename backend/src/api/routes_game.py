@@ -3,7 +3,6 @@ from fastapi import APIRouter, Depends
 from backend.src.core.dependencies import get_game_service
 from backend.src.schemas.game import (
     PlaceShapeRequest,
-    PlaceShapeResponse,
     GameStateResponse,
     GameStateMLResponse,
 )
@@ -27,12 +26,12 @@ def get_game(
     return service.get_game(game_id)
 
 
-@router.post("/{game_id}/place", response_model=PlaceShapeResponse)
+@router.post("/{game_id}/place", response_model=GameStateResponse)
 def place_shape(
     game_id: str,
     request: PlaceShapeRequest,
     service: GameService = Depends(get_game_service),
-) -> PlaceShapeResponse:
+) -> GameStateResponse:
     return service.place_shape(
         game_id,
         request.shape_index,

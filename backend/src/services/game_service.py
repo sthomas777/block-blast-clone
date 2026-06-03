@@ -3,7 +3,6 @@ from uuid import uuid4
 from backend.src.game.session import GameSession
 from backend.src.schemas.game import (
     GameStateResponse,
-    PlaceShapeResponse,
     GameStateMLResponse,
 )
 
@@ -59,7 +58,7 @@ class GameService:
         shape_index: int,
         row: int,
         col: int,
-    ) -> PlaceShapeResponse:
+    ) -> GameStateResponse:
         if game_id not in self.games:
             raise InvalidGameID("Invalid game id")
         session = self.games[game_id]
@@ -71,13 +70,14 @@ class GameService:
         if not session.preview_shape(shape, (row, col)):
             raise InvalidPosition(f"Cannot place {shape.name} at position {(row, col)}")
         session.confirm_placement()
-        score = session.get_score()
-        return PlaceShapeResponse(
+
+        return GameStateResponse(
             game_id=game_id,
             status=session.state,
-            shape=shape.name,
-            placement=(row, col),
-            score=score,
+            grid=session.board.grid,
+            score=session.get_score(),
+            shape=session.get_available_shapes(),
+            game_over=session.is_game_over(),
         )
 
     def get_ml_state(self, game_id: str) -> GameStateMLResponse:

@@ -4,7 +4,6 @@ from backend.src.game.session import GameState
 from backend.src.schemas.game import (
     GameStateResponse,
     PlaceShapeRequest,
-    PlaceShapeResponse,
     GameStateMLResponse,
 )
 
@@ -51,16 +50,11 @@ def test_place_shape(client: TestClient, game_fixture: GameStateResponse) -> Non
         ),
     )
     response = client.post(f"/game/{game_fixture.game_id}/place", json=test_data)
-    shape_at_position_0 = game_fixture.shape[
-        0
-    ].name  # this will check if the shape is truly gone from (i=0)
     assert response.status_code == 200
 
-    game = PlaceShapeResponse(**response.json())
+    game = GameStateResponse(**response.json())
     assert game.game_id == game_fixture.game_id
     assert game.status == GameState.PLAYER_TURN
-    assert game.shape == shape_at_position_0
-    assert game.placement == (3, 3)
     assert game.score == 0
 
 

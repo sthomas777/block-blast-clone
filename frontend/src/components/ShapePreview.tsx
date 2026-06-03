@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { setGlobalDragShape, clearGlobalDragShape } from "./Grid";
+import { useDrag } from "../contexts/DragContext";
 
 interface ShapePreviewProps {
   shape: number[][];
@@ -15,6 +15,7 @@ function ShapePreview({
   isSelected,
   shapeIndex,
 }: ShapePreviewProps) {
+  const { setCoords } = useDrag();
   const [isDragging, setIsDragging] = useState(false);
   const [dragPos, setDragPos] = useState({ x: 0, y: 0 });
 
@@ -46,8 +47,7 @@ function ShapePreview({
     e.dataTransfer!.setData("shapeIndex", shapeIndex.toString());
     e.dataTransfer!.setData("shapeCoords", JSON.stringify(coords));
 
-    // Set global drag shape for preview
-    setGlobalDragShape(shapeIndex, coords);
+    setCoords(coords);
 
     // Create a transparent drag image to replace the default
     const emptyImage = new Image();
@@ -65,7 +65,7 @@ function ShapePreview({
 
   const handleDragEnd = () => {
     setIsDragging(false);
-    clearGlobalDragShape();
+    setCoords(null);
   };
 
   return (
