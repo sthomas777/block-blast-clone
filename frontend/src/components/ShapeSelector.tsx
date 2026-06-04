@@ -1,5 +1,6 @@
 import type { BlockBlastShape } from "../types/game.ts";
 import ShapePreview from "./ShapePreview";
+import { coordinatesToGrid } from "../utils/shapeHelpers";
 
 interface ShapeSelectorProps {
   shapes: (BlockBlastShape | null)[];
@@ -32,20 +33,10 @@ function ShapeSelector({
       {shapes.map((shape, idx) => {
         if (!shape) return null;
 
-        const maxRow = Math.max(...shape.coordinates.map(([r]) => r), 0);
-        const maxCol = Math.max(...shape.coordinates.map(([, c]) => c), 0);
-
-        const grid: number[][] = Array(maxRow + 1)
-          .fill(null)
-          .map(() => Array(maxCol + 1).fill(0));
-        shape.coordinates.forEach(([r, c]) => {
-          grid[r][c] = 1;
-        });
-
         return (
           <ShapePreview
-            key={idx}
-            shape={grid}
+            key={`${shape.name}-${idx}`}
+            shape={coordinatesToGrid(shape.coordinates)}
             color={shape.color}
             isSelected={selectedIndex === idx}
             onShapeClick={() => onSelect(idx)}
