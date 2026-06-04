@@ -1,6 +1,6 @@
-import { useState } from "react";
 import Cell from "./Cell";
-import { useDrag } from "../contexts/DragContext";
+import { calculateDragShapeCells } from "../hooks/useDragPreview";
+import { useDragHandlers } from "../hooks/useDragHandlers";
 
 interface GridProps {
   grid: (number | string)[][];
@@ -17,93 +17,23 @@ function Grid({
   onDrop,
   previewCells = [],
 }: GridProps) {
-  const { coords: globalDragShapeCoords, setCoords } = useDrag();
+  const {
+    dragOverCell,
+    dragShapeCoords,
+    handleDragOver,
+    handleDragLeave,
+    handleDragEnter,
+    handleDrop,
+  } = useDragHandlers(onDrop);
+
   const previewSet = new Set(previewCells.map(([r, c]) => `${r}-${c}`));
-  const [dragOverCell, setDragOverCell] = useState<{
-    row: number;
-    col: number;
-  } | null>(null);
+  const dragShapeCells = calculateDragShapeCells(dragOverCell, dragShapeCoords);
 
-  const handleDragOver = (
-    e: React.DragEvent,
-    rowIdx: number,
-    colIdx: number,
-  ) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-    setDragOverCell({ row: rowIdx, col: colIdx });
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    // Only clear if leaving the grid entirely, not just moving between cells
-    const relatedTarget = e.relatedTarget as HTMLElement;
-    if (!relatedTarget || !e.currentTarget.contains(relatedTarget)) {
-      setDragOverCell(null);
-    }
-  };
-
-  const handleDragEnter = (e: React.DragEvent) => {
-    const coordsData = e.dataTransfer.getData("shapeCoords");
-    if (coordsData) {
-      try {
-        setCoords(JSON.parse(coordsData));
-      } catch {
-        // Ignore parse errors
-      }
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent, rowIdx: number, colIdx: number) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const data = e.dataTransfer.getData("shapeIndex");
-    if (data && globalDragShapeCoords) {
-      const shapeIndex = parseInt(data);
-
-      // Calculate shape's center offset
-      const minRow = Math.min(...globalDragShapeCoords.map(([r]) => r));
-      const maxRow = Math.max(...globalDragShapeCoords.map(([r]) => r));
-      const minCol = Math.min(...globalDragShapeCoords.map(([, c]) => c));
-      const maxCol = Math.max(...globalDragShapeCoords.map(([, c]) => c));
-
-      const centerOffsetRow = Math.floor((maxRow - minRow) / 2);
-      const centerOffsetCol = Math.floor((maxCol - minCol) / 2);
-
-      // Adjust drop position so shape centers on dropped cell, clamped to valid bounds
-      let anchorRow = rowIdx - minRow - centerOffsetRow;
-      let anchorCol = colIdx - minCol - centerOffsetCol;
-
-      anchorRow = Math.max(0, Math.min(anchorRow, 7 - maxRow));
-      anchorCol = Math.max(0, Math.min(anchorCol, 7 - maxCol));
-
-      onDrop?.(anchorRow, anchorCol, shapeIndex);
-    }
-    setDragOverCell(null);
-    setCoords(null);
-  };
-
-  // Calculate which cells the dragged shape would occupy
-  const dragShapeCells = new Set<string>();
-  if (dragOverCell && globalDragShapeCoords) {
-    // Calculate shape's center offset
-    const minRow = Math.min(...globalDragShapeCoords.map(([r]) => r));
-    const maxRow = Math.max(...globalDragShapeCoords.map(([r]) => r));
-    const minCol = Math.min(...globalDragShapeCoords.map(([, c]) => c));
-    const maxCol = Math.max(...globalDragShapeCoords.map(([, c]) => c));
-
-    const centerOffsetRow = Math.floor((maxRow - minRow) / 2);
-    const centerOffsetCol = Math.floor((maxCol - minCol) / 2);
-
-    // Adjust drop position so shape centers on hovered cell
-    const anchorRow = dragOverCell.row - minRow - centerOffsetRow;
-    const anchorCol = dragOverCell.col - minCol - centerOffsetCol;
-
-    for (const [dr, dc] of globalDragShapeCoords) {
-      const r = anchorRow + dr;
-      const c = anchorCol + dc;
-      dragShapeCells.add(`${r}-${c}`);
-    }
-  }
+  const getCellStyle = (isDragShape: boolean): React.CSSProperties => ({
+    opacity: isDragShape ? 0.8 : 1,
+    outline: isDragShape ? "2px solid yellow" : "none",
+    outlineOffset: "-2px",
+  });
 
   return (
     <div
@@ -124,6 +54,7 @@ function Grid({
         row.map((value, colIdx) => {
           const isPreview = previewSet.has(`${rowIdx}-${colIdx}`);
           const isDragShape = dragShapeCells.has(`${rowIdx}-${colIdx}`);
+
           return (
             <div
               key={`${rowIdx}-${colIdx}`}
@@ -131,11 +62,7 @@ function Grid({
               onMouseLeave={() => onCellHover?.(null)}
               onDragOver={(e) => handleDragOver(e, rowIdx, colIdx)}
               onDrop={(e) => handleDrop(e, rowIdx, colIdx)}
-              style={{
-                opacity: isDragShape ? 0.8 : 1,
-                outline: isDragShape ? "2px solid yellow" : "none",
-                outlineOffset: "-2px",
-              }}
+              style={getCellStyle(isDragShape)}
             >
               <Cell
                 value={value}

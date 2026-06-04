@@ -3,26 +3,36 @@ import { type GameStateResponse } from "../types/game";
 
 const API_BASE = "http://localhost:8000";
 
+async function extractErrorMessage(response: Response): Promise<string> {
+  try {
+    const errorData = await response.json();
+    if (typeof errorData.detail === "string") {
+      return errorData.detail;
+    }
+    if (errorData.detail?.[0]?.msg) {
+      return errorData.detail[0].msg;
+    }
+  } catch {
+    // Fall through to default
+  }
+  return `HTTP ${response.status}`;
+}
+
+async function handleApiError(response: Response): Promise<never> {
+  const errorMessage = await extractErrorMessage(response);
+  throw new Error(errorMessage);
+}
+
 async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`, {
     headers: { "Content-Type": "application/json" },
     ...options,
   });
+
   if (!response.ok) {
-    let errorMessage = `HTTP ${response.status}`;
-    try {
-      const errorData = await response.json();
-      if (errorData.detail) {
-        errorMessage =
-          typeof errorData.detail === "string"
-            ? errorData.detail
-            : errorData.detail[0]?.msg || errorMessage;
-      }
-    } catch {
-      // Use default error message
-    }
-    throw new Error(errorMessage);
+    await handleApiError(response);
   }
+
   return response.json();
 }
 
@@ -42,6 +52,7 @@ export function useGameApi(): UseGameApiReturn {
   const createGame = async () => {
     setIsLoading(true);
     setError(null);
+
     try {
       const data = await apiFetch<GameStateResponse>("/game/new", {
         method: "POST",
@@ -58,8 +69,10 @@ export function useGameApi(): UseGameApiReturn {
 
   const placeBlock = async (blockIndex: number, row: number, col: number) => {
     if (!gameState) return;
+
     setIsLoading(true);
     setError(null);
+
     try {
       const data = await apiFetch<GameStateResponse>(
         `/game/${gameState.game_id}/place`,
