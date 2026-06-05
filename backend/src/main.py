@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from backend.src.api.routes_game import router as game_router
 from backend.src.api.ws_game import router as ws_game_router
 from backend.src.services.game_service import InvalidGameID, InvalidPosition
 
@@ -35,5 +34,4 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.include_router(game_router)
 app.include_router(ws_game_router)
