@@ -1,13 +1,16 @@
 import Cell from "./Cell";
 import { calculateDragShapeCells } from "../hooks/useDragPreview";
 import { useDragHandlers } from "../hooks/useDragHandlers";
+import { BOARD_CELL_SIZE, BOARD_GAP, GRID_SIZE } from "../constants";
+import type { CellValue, Coord, Position } from "../types/game";
+import styles from "../styles/Grid.module.css";
 
 interface GridProps {
-  grid: (number | string)[][];
+  grid: CellValue[][];
   onCellClick?: (row: number, col: number) => void;
-  onCellHover?: (pos: { row: number; col: number } | null) => void;
+  onCellHover?: (pos: Position | null) => void;
   onDrop?: (row: number, col: number, shapeIndex: number) => void;
-  previewCells?: number[][];
+  previewCells?: Coord[];
 }
 
 function Grid({
@@ -29,23 +32,13 @@ function Grid({
   const previewSet = new Set(previewCells.map(([r, c]) => `${r}-${c}`));
   const dragShapeCells = calculateDragShapeCells(dragOverCell, dragShapeCoords);
 
-  const getCellStyle = (isDragShape: boolean): React.CSSProperties => ({
-    opacity: isDragShape ? 0.8 : 1,
-    outline: isDragShape ? "2px solid yellow" : "none",
-    outlineOffset: "-2px",
-  });
-
   return (
     <div
+      className={styles.board}
+      // Grid template + gap are derived from JS constants, so they stay inline.
       style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(8, 50px)",
-        gap: "8px",
-        padding: "20px",
-        backgroundColor: "#1a1a1a",
-        borderRadius: "12px",
-        boxShadow:
-          "inset 0 4px 12px rgba(0,0,0,0.8), 0 8px 24px rgba(0,0,0,0.5)",
+        gridTemplateColumns: `repeat(${GRID_SIZE}, ${BOARD_CELL_SIZE}px)`,
+        gap: `${BOARD_GAP}px`,
       }}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
@@ -58,11 +51,11 @@ function Grid({
           return (
             <div
               key={`${rowIdx}-${colIdx}`}
+              className={`${styles.cellWrapper} ${isDragShape ? styles.dragShape : ""}`}
               onMouseEnter={() => onCellHover?.({ row: rowIdx, col: colIdx })}
               onMouseLeave={() => onCellHover?.(null)}
               onDragOver={(e) => handleDragOver(e, rowIdx, colIdx)}
               onDrop={(e) => handleDrop(e, rowIdx, colIdx)}
-              style={getCellStyle(isDragShape)}
             >
               <Cell
                 value={value}

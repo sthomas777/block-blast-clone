@@ -1,4 +1,5 @@
 import GameControls from "./GameControls";
+import styles from "../styles/GameInitScreen.module.css";
 
 interface GameInitScreenProps {
   onCreateGame: () => void;
@@ -12,18 +13,7 @@ function GameInitScreen({
   error,
 }: GameInitScreenProps) {
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        backgroundColor: "#1a1a1a",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "20px",
-        fontFamily: "system-ui, -apple-system, sans-serif",
-      }}
-    >
+    <div className={styles.initContainer}>
       <GameControls
         onNewGame={onCreateGame}
         isLoading={isLoading}

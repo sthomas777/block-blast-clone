@@ -1,40 +1,37 @@
 import Grid from "./Grid";
 import Scoreboard from "./Scoreboard";
 import ShapeSelector from "./ShapeSelector";
+import { useBoardInteraction } from "../hooks/useBoardInteraction";
 import type { GameStateResponse } from "../types/game";
 
 interface GameBoardProps {
   gameState: GameStateResponse;
-  selectedBlock: number | null;
-  onSelectBlock: (index: number) => void;
-  onCellClick: (row: number, col: number) => void;
-  onCellHover: (pos: { row: number; col: number } | null) => void;
-  onDrop: (row: number, col: number, shapeIndex: number) => void;
-  previewCells: number[][];
+  placeBlock: (blockIndex: number, row: number, col: number) => Promise<void>;
 }
 
-function GameBoard({
-  gameState,
-  selectedBlock,
-  onSelectBlock,
-  onCellClick,
-  onCellHover,
-  onDrop,
-  previewCells,
-}: GameBoardProps) {
+function GameBoard({ gameState, placeBlock }: GameBoardProps) {
+  const {
+    selectedBlock,
+    setSelectedBlock,
+    setHoverPos,
+    previewCells,
+    handleCellClick,
+    handleDrop,
+  } = useBoardInteraction(gameState, placeBlock);
+
   return (
     <>
       <Scoreboard score={gameState.score} />
       <ShapeSelector
         shapes={gameState.shape}
         selectedIndex={gameState.game_over ? null : selectedBlock}
-        onSelect={gameState.game_over ? () => {} : onSelectBlock}
+        onSelect={gameState.game_over ? () => {} : setSelectedBlock}
       />
       <Grid
         grid={gameState.grid}
-        onCellClick={onCellClick}
-        onCellHover={onCellHover}
-        onDrop={onDrop}
+        onCellClick={handleCellClick}
+        onCellHover={setHoverPos}
+        onDrop={handleDrop}
         previewCells={previewCells}
       />
     </>

@@ -1,3 +1,6 @@
+import { GRID_SIZE } from "../constants";
+import type { Coord, Position } from "../types/game";
+
 interface ShapeBounds {
   minRow: number;
   maxRow: number;
@@ -10,7 +13,7 @@ interface CenterOffset {
   col: number;
 }
 
-function getShapeBounds(coords: [number, number][]): ShapeBounds {
+function getShapeBounds(coords: Coord[]): ShapeBounds {
   const minRow = Math.min(...coords.map(([r]) => r));
   const maxRow = Math.max(...coords.map(([r]) => r));
   const minCol = Math.min(...coords.map(([, c]) => c));
@@ -27,8 +30,8 @@ function getCenterOffset(bounds: ShapeBounds): CenterOffset {
 }
 
 export function calculateDragShapeCells(
-  dragOverCell: { row: number; col: number } | null,
-  coords: [number, number][] | null,
+  dragOverCell: Position | null,
+  coords: Coord[] | null,
 ): Set<string> {
   const cells = new Set<string>();
 
@@ -52,9 +55,9 @@ export function calculateDragShapeCells(
 export function calculateDropPosition(
   rowIdx: number,
   colIdx: number,
-  coords: [number, number][],
-  gridSize = 8,
-): { row: number; col: number } {
+  coords: Coord[],
+  gridSize = GRID_SIZE,
+): Position {
   const bounds = getShapeBounds(coords);
   const centerOffset = getCenterOffset(bounds);
 

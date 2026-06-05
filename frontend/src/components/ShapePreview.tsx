@@ -1,54 +1,57 @@
+import { useMemo } from "react";
 import ShapeGrid from "./ShapeGrid";
 import DragOverlay from "./DragOverlay";
-import { getShapeMaxDimensions } from "../utils/shapeHelpers";
+import {
+  coordinatesToGrid,
+  getShapeMaxDimensions,
+} from "../utils/shapeHelpers";
 import { useShapeDrag } from "../hooks/useShapeDrag";
+import { PREVIEW_CELL_SIZE, PREVIEW_GAP } from "../constants";
+import type { Coord } from "../types/game";
+import styles from "../styles/ShapePreview.module.css";
 
 interface ShapePreviewProps {
-  shape: number[][];
+  coordinates: Coord[];
   color: string;
   isSelected: boolean;
   onShapeClick: () => void;
   shapeIndex: number;
 }
 
-const PREVIEW_CELL_SIZE = 16;
-const PREVIEW_GAP = 1;
-
 function ShapePreview({
-  shape,
+  coordinates,
   color,
   isSelected,
+  onShapeClick,
   shapeIndex,
 }: ShapePreviewProps) {
   const { isDragging, dragPos, handleDragStart, handleDrag, handleDragEnd } =
-    useShapeDrag(shape, shapeIndex);
+    useShapeDrag(coordinates, shapeIndex);
 
-  const { maxRow, maxCol } = getShapeMaxDimensions(shape);
+  // Derive the render matrix from coordinates. useMemo keeps the same array
+  // instance between renders unless `coordinates` changes, avoiding needless
+  // recomputation.
+  const matrix = useMemo(() => coordinatesToGrid(coordinates), [coordinates]);
+  const { maxRow, maxCol } = getShapeMaxDimensions(matrix);
+
+  const className = [
+    styles.preview,
+    isSelected ? styles.selected : "",
+    isDragging ? styles.dragging : "",
+  ].join(" ");
 
   return (
     <>
       <div
         draggable
+        onClick={onShapeClick}
         onDragStart={handleDragStart}
         onDrag={handleDrag}
         onDragEnd={handleDragEnd}
-        style={{
-          padding: "6px",
-          border: isSelected ? "3px solid #4fc3f7" : "none",
-          borderRadius: "8px",
-          cursor: "grab",
-          display: "inline-block",
-          opacity: isDragging ? 0 : 1,
-          backgroundColor: isSelected
-            ? "rgba(79, 195, 247, 0.15)"
-            : "rgba(255, 255, 255, 0.05)",
-          transition: "all 0.2s ease",
-          boxShadow: isSelected ? "0 0 12px rgba(79, 195, 247, 0.3)" : "none",
-          userSelect: "none",
-        }}
+        className={className}
       >
         <ShapeGrid
-          shape={shape}
+          shape={matrix}
           color={color}
           cellSize={PREVIEW_CELL_SIZE}
           gap={PREVIEW_GAP}
@@ -59,7 +62,7 @@ function ShapePreview({
 
       {isDragging && (
         <DragOverlay
-          shape={shape}
+          shape={matrix}
           color={color}
           dragPos={dragPos}
           maxRow={maxRow}

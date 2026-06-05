@@ -1,4 +1,4 @@
-import { newGameButtonStyle, errorStyle } from "../styles/appStyles";
+import styles from "../styles/GameControls.module.css";
 
 interface GameControlsProps {
   onNewGame: () => void;
@@ -12,14 +12,11 @@ function GameControls({ onNewGame, isLoading, error }: GameControlsProps) {
       <button
         onClick={onNewGame}
         disabled={isLoading}
-        style={{
-          ...newGameButtonStyle,
-          cursor: isLoading ? "not-allowed" : "pointer",
-        }}
+        className={styles.newGameButton}
       >
         {isLoading ? "Creating..." : "New Game"}
       </button>
-      {error && <div style={errorStyle}>{error}</div>}
+      {error && <div className={styles.error}>{error}</div>}
     </>
   );
 }

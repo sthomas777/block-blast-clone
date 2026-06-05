@@ -1,0 +1,15 @@
+.scoreboard {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.heading {
+  color: #fff;
+  font-size: 28px;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+.value {
+  color: #4fc3f7;
+}
