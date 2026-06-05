@@ -68,7 +68,7 @@ def test_place_shape_fake_id(client: TestClient) -> None:
     )
     response = client.post("/game/asdfasdfasdf/place", json=test_data)
     assert response.status_code == 404
-    assert response.json()["detail"] == "Invalid game id"
+    assert response.json()["detail"] == "Invalid game id. Not in list of game ids"
 
 
 def test_place_shape_invalid_placement(

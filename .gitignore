@@ -13,3 +13,4 @@ blockblast_backend.egg-info/
 .idea/
 .coverage
 *.DS_Store
+*.kiro
