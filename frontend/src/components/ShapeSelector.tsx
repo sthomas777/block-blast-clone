@@ -1,6 +1,6 @@
 import type { BlockBlastShape } from "../types/game.ts";
 import ShapePreview from "./ShapePreview";
-import { coordinatesToGrid } from "../utils/shapeHelpers";
+import styles from "../styles/ShapeSelector.module.css";
 
 interface ShapeSelectorProps {
   shapes: (BlockBlastShape | null)[];
@@ -14,29 +14,14 @@ function ShapeSelector({
   onSelect,
 }: ShapeSelectorProps) {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-around",
-        alignItems: "center",
-        gap: "20px",
-        width: "100%",
-        minHeight: "100px",
-        padding: "10px",
-        backgroundColor: "#1a1a1a",
-        borderRadius: "12px",
-        border: "2px solid #333",
-        marginBottom: "24px",
-        boxSizing: "border-box",
-      }}
-    >
+    <div className={styles.selector}>
       {shapes.map((shape, idx) => {
         if (!shape) return null;
 
         return (
           <ShapePreview
             key={`${shape.name}-${idx}`}
-            shape={coordinatesToGrid(shape.coordinates)}
+            coordinates={shape.coordinates}
             color={shape.color}
             isSelected={selectedIndex === idx}
             onShapeClick={() => onSelect(idx)}

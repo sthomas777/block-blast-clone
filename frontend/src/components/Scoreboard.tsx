@@ -1,19 +1,14 @@
+import styles from "../styles/Scoreboard.module.css";
+
 interface ScoreboardProps {
   score: number;
 }
 
 function Scoreboard({ score }: ScoreboardProps) {
   return (
-    <div style={{ marginBottom: "24px", textAlign: "center" }}>
-      <h2
-        style={{
-          color: "#fff",
-          fontSize: "28px",
-          margin: "0",
-          letterSpacing: "1px",
-        }}
-      >
-        Score: <span style={{ color: "#4fc3f7" }}>{score}</span>
+    <div className={styles.scoreboard}>
+      <h2 className={styles.heading}>
+        Score: <span className={styles.value}>{score}</span>
       </h2>
     </div>
   );

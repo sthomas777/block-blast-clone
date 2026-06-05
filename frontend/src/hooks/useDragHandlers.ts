@@ -2,15 +2,13 @@ import { useState } from "react";
 import { useDrag } from "./useDrag";
 import { calculateDropPosition } from "./useDragPreview";
 import { isLeavingGrid, parseShapeCoords } from "../utils/gridHelpers";
+import type { Position } from "../types/game";
 
 export function useDragHandlers(
   onDrop?: (row: number, col: number, shapeIndex: number) => void,
 ) {
   const { coords: dragShapeCoords, setCoords } = useDrag();
-  const [dragOverCell, setDragOverCell] = useState<{
-    row: number;
-    col: number;
-  } | null>(null);
+  const [dragOverCell, setDragOverCell] = useState<Position | null>(null);
 
   const handleDragOver = (e: React.DragEvent, row: number, col: number) => {
     e.preventDefault();
@@ -38,7 +36,7 @@ export function useDragHandlers(
     const shapeIndexStr = e.dataTransfer.getData("shapeIndex");
     if (!shapeIndexStr || !dragShapeCoords) return;
 
-    const shapeIndex = parseInt(shapeIndexStr);
+    const shapeIndex = parseInt(shapeIndexStr, 10);
     const dropPos = calculateDropPosition(row, col, dragShapeCoords);
     onDrop?.(dropPos.row, dropPos.col, shapeIndex);
 

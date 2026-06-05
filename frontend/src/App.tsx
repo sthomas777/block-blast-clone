@@ -1,89 +1,43 @@
-import { useState } from "react";
-import { useGameApi } from "./hooks/useGameApi";
+import { useGameState } from "./hooks/useGameState";
 import GameBoard from "./components/GameBoard";
 import GameOverOverlay from "./components/GameOverOverlay";
 import GameInitScreen from "./components/GameInitScreen";
 import GameControls from "./components/GameControls";
 import { DragProvider } from "./contexts/DragContext";
-import { calculatePreviewCells } from "./utils/shapeHelpers";
-import {
-  containerStyle,
-  titleStyle,
-  gameContainerStyle,
-} from "./styles/appStyles";
+import styles from "./styles/App.module.css";
 
 function App() {
-  const { gameState, isLoading, error, createGame, placeBlock } = useGameApi();
-  const [selectedBlock, setSelectedBlock] = useState<number | null>(null);
-  const [hoverPos, setHoverPos] = useState<{ row: number; col: number } | null>(
-    null,
-  );
+  const { gameState, error, isConnected, createGame, placeBlock } =
+    useGameState();
 
   if (!gameState) {
     return (
       <GameInitScreen
         onCreateGame={createGame}
-        isLoading={isLoading}
+        isLoading={!isConnected}
         error={error}
       />
     );
   }
 
-  const handlePlaceBlock = async (row: number, col: number) => {
-    if (selectedBlock === null || gameState.game_over) return;
-    await placeBlock(selectedBlock, row, col);
-    setSelectedBlock(null);
-  };
-
-  const handleDrop = async (row: number, col: number, shapeIndex: number) => {
-    if (gameState.game_over) return;
-    await placeBlock(shapeIndex, row, col);
-  };
-
-  const previewCells =
-    hoverPos && selectedBlock !== null
-      ? calculatePreviewCells(
-          hoverPos.row,
-          hoverPos.col,
-          gameState.shape,
-          selectedBlock,
-        )
-      : [];
-
   return (
     <DragProvider>
-      <div style={containerStyle}>
-        <h1 style={titleStyle}>Block Blast</h1>
-        <div style={gameContainerStyle}>
+      <div className={styles.container}>
+        <h1 className={styles.title}>Block Blast</h1>
+        {!isConnected && (
+          <p className={styles.connecting}>Connecting to server…</p>
+        )}
+        <div className={styles.gameContainer}>
           <GameControls
             onNewGame={createGame}
-            isLoading={isLoading}
+            isLoading={!isConnected}
             error={error}
           />
-          <GameBoard
-            gameState={gameState}
-            selectedBlock={selectedBlock}
-            onSelectBlock={setSelectedBlock}
-            onCellClick={handlePlaceBlock}
-            onCellHover={setHoverPos}
-            onDrop={handleDrop}
-            previewCells={previewCells}
-          />
+          <GameBoard gameState={gameState} placeBlock={placeBlock} />
         </div>
         {gameState.game_over && (
           <GameOverOverlay score={gameState.score} onNewGame={createGame} />
         )}
-        <style>{`
-        body {
-          margin: 0;
-          background-color: #1a1a1a;
-        }
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-5px); }
-          75% { transform: translateX(5px); }
-        }
-      `}</style>
       </div>
     </DragProvider>
   );

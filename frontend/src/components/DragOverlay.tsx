@@ -1,7 +1,10 @@
 import ShapeGrid from "./ShapeGrid";
+import { BOARD_CELL_SIZE, BOARD_GAP } from "../constants";
+import type { ShapeMatrix } from "../types/game";
+import styles from "../styles/DragOverlay.module.css";
 
 interface DragOverlayProps {
-  shape: number[][];
+  shape: ShapeMatrix;
   color: string;
   dragPos: { x: number; y: number };
   maxRow: number;
@@ -15,21 +18,16 @@ function DragOverlay({
   maxRow,
   maxCol,
 }: DragOverlayProps) {
-  const cellSize = 50;
-  const gap = 8;
+  const cellSize = BOARD_CELL_SIZE;
+  const gap = BOARD_GAP;
 
   return (
     <div
+      className={styles.overlay}
+      // left/top track the live cursor position, so they stay inline.
       style={{
-        position: "fixed",
         left: `${dragPos.x - ((maxCol + 1) * cellSize) / 2 - (gap * maxCol) / 2}px`,
         top: `${dragPos.y - ((maxRow + 1) * cellSize) / 2 - (gap * maxRow) / 2}px`,
-        pointerEvents: "none",
-        zIndex: 10000,
-        padding: "6px",
-        backgroundColor: "rgba(79, 195, 247, 0.2)",
-        borderRadius: "8px",
-        border: "2px solid #4fc3f7",
       }}
     >
       <ShapeGrid

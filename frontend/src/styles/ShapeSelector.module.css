@@ -1,0 +1,14 @@
+.selector {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  min-height: 100px;
+  padding: 10px;
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  border: 2px solid #333;
+  margin-bottom: 24px;
+  box-sizing: border-box;
+}

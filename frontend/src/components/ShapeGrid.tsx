@@ -1,5 +1,7 @@
+import type { ShapeMatrix } from "../types/game";
+
 interface ShapeGridProps {
-  shape: number[][];
+  shape: ShapeMatrix;
   color: string;
   cellSize: number;
   gap: number;

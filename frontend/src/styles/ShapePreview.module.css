@@ -1,0 +1,20 @@
+.preview {
+  padding: 6px;
+  border: none;
+  border-radius: 8px;
+  cursor: grab;
+  display: inline-block;
+  background-color: rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.selected {
+  border: 3px solid #4fc3f7;
+  background-color: rgba(79, 195, 247, 0.15);
+  box-shadow: 0 0 12px rgba(79, 195, 247, 0.3);
+}
+
+.dragging {
+  opacity: 0;
+}

@@ -7,11 +7,15 @@ from backend.src.schemas.game import (
 )
 
 
-class InvalidPosition(Exception):
+class GameError(Exception):
+    """Base game domain exception."""
+
+
+class InvalidPosition(GameError):
     pass
 
 
-class InvalidGameID(Exception):
+class InvalidGameID(GameError):
     pass
 
 
@@ -60,7 +64,7 @@ class GameService:
         col: int,
     ) -> GameStateResponse:
         if game_id not in self.games:
-            raise InvalidGameID("Invalid game id")
+            raise InvalidGameID("Invalid game id. Not in list of game ids")
         session = self.games[game_id]
         if not (0 <= shape_index <= 2):
             raise InvalidPosition(
