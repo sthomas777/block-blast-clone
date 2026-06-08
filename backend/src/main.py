@@ -1,22 +1,11 @@
-from contextlib import asynccontextmanager
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from backend.src.api.ws_game import router as ws_game_router
-from backend.src.core.database import engine, Base
 from backend.src.services.game_service import InvalidGameID, InvalidPosition
 
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    yield
-
-
-app = FastAPI(title="Block Blast API", version="0.1.0", lifespan=lifespan)
+app = FastAPI(title="Block Blast API", version="0.1.0")
 
 
 @app.exception_handler(InvalidPosition)
