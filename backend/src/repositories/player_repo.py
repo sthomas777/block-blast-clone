@@ -22,3 +22,9 @@ class PlayerRepository:
             select(Player).where(Player.username == username),
         )
         return result.scalar_one_or_none()
+
+    async def get_by_id(self, player_id: int) -> Player | None:
+        result = await self.session.execute(
+            select(Player).where(Player.player_id == player_id),
+        )
+        return result.scalar_one_or_none()

@@ -33,7 +33,7 @@ def test_can_place_shape() -> None:
 def test_place_shape() -> None:
     board = GameBoard(rows=8, cols=8)
     shape_manager = ShapeManager(
-        {SHAPE_I.name: SHAPE_I, SHAPE_O.name: SHAPE_O, SHAPE_T.name: SHAPE_T}
+        {SHAPE_I.name: SHAPE_I, SHAPE_O.name: SHAPE_O, SHAPE_T.name: SHAPE_T},
     )
     scoring = ScoringEngine()
     engine = GameEngine(board, shape_manager, scoring)
@@ -46,7 +46,7 @@ def test_place_shape() -> None:
 def test_process_board() -> None:
     board = GameBoard(rows=8, cols=8)
     shape_manager = ShapeManager(
-        {SHAPE_I.name: SHAPE_I, SHAPE_O.name: SHAPE_O, SHAPE_T.name: SHAPE_T}
+        {SHAPE_I.name: SHAPE_I, SHAPE_O.name: SHAPE_O, SHAPE_T.name: SHAPE_T},
     )
     scoring = ScoringEngine()
     engine = GameEngine(board, shape_manager, scoring)
@@ -56,7 +56,7 @@ def test_process_board() -> None:
 
 
 def test_has_valid_moves() -> None:
-    board = GameBoard(rows=6, cols=6)
+    board = GameBoard(rows=8, cols=8)
     shape_manager = ShapeManager({SHAPE_I.name: SHAPE_I})
     scoring = ScoringEngine()
     engine = GameEngine(board, shape_manager, scoring)
@@ -64,8 +64,21 @@ def test_has_valid_moves() -> None:
     assert engine.has_valid_moves() is True
 
 
+def test_has_valid_moves_returns_false_when_board_full() -> None:
+    board = GameBoard(rows=8, cols=8)
+    shape_manager = ShapeManager({SHAPE_I.name: SHAPE_I})
+    scoring = ScoringEngine()
+    engine = GameEngine(board, shape_manager, scoring)
+    shape_manager.current_shapes = [SHAPE_I]
+    # Fill every cell so no shape can be placed anywhere.
+    for r in range(board.rows):
+        for c in range(board.cols):
+            board.board[r, c] = "#ffffff"
+    assert engine.has_valid_moves() is False
+
+
 def test_get_score() -> None:
-    board = GameBoard(rows=6, cols=6)
+    board = GameBoard(rows=8, cols=8)
     shape_manager = ShapeManager(SHAPES)
     scoring = ScoringEngine()
     engine = GameEngine(board, shape_manager, scoring)

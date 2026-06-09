@@ -52,6 +52,23 @@ def test_confirm_placement() -> None:
     assert session.state.name == "PLAYER_TURN"
 
 
+def test_confirm_placement_game_over_when_no_moves_left(monkeypatch) -> None:
+    session = GameSession(board_size=(8, 8))
+    session.start()
+    session.engine.shape_manager.current_shapes = [SHAPE_I, SHAPE_O, SHAPE_T]
+    scores: list[int] = []
+    session.on("game_over", scores.append)
+
+    session.preview_shape(SHAPE_I, (0, 0))
+    # Force the "no valid moves remain" branch after the placement.
+    monkeypatch.setattr(session.engine, "has_valid_moves", lambda: False)
+    session.confirm_placement()
+
+    assert session.state.name == "GAME_OVER"
+    assert session.is_game_over() is True
+    assert len(scores) == 1
+
+
 def test_is_game_over() -> None:
     session = GameSession(board_size=(8, 8))
     assert session.is_game_over() is False

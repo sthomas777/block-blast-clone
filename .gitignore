@@ -12,5 +12,5 @@ blockblast_backend.egg-info/
 .env
 .idea/
 .coverage
-*.DS_Store
-*.kiro
+.DS_Store
+.kiro
