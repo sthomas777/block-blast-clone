@@ -1,19 +1,11 @@
-from contextlib import asynccontextmanager
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from backend.src.api.routes_auth import router as auth_router
 from backend.src.api.ws_game import router as ws_game_router
-from backend.src.core.database import engine, Base
+from backend.src.core.lifespan import lifespan
 from backend.src.services.game_service import InvalidGameID, InvalidPosition
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    yield
 
 
 app = FastAPI(title="Block Blast API", version="0.1.0", lifespan=lifespan)
@@ -46,3 +38,4 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(ws_game_router)
+app.include_router(auth_router)

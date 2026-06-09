@@ -1,6 +1,6 @@
 import pytest
+from backend.src.schemas.game import GameStateMLResponse
 from backend.src.services.game_service import GameService, InvalidGameID
-from backend.tests.unit.services.data.test_get_ml_state import expected_game
 
 EMPTY_GRID = [
     [0, 0, 0, 0, 0, 0, 0, 0],
@@ -12,6 +12,13 @@ EMPTY_GRID = [
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
 ]
+
+expected_game = GameStateMLResponse(
+    grid=EMPTY_GRID,
+    score=0,
+    shape=[],
+    game_over=False,
+)
 
 
 def test_get_ml_state(test_game_session) -> None:

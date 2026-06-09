@@ -29,16 +29,6 @@ type ClientMessage = Annotated[
 ]
 
 
-class PlaceShapeRequest(BaseModel):
-    shape_index: int = Field(
-        ge=0,
-        le=2,
-        description="Which of the 3 available blocks to place",
-    )
-    row: int = Field(ge=0, le=7, description="Grid row (0=top, 7=bottom)")
-    col: int = Field(ge=0, le=7, description="Grid column (0=left, 7=right)")
-
-
 class GameStateResponse(BaseModel):
     game_id: str
     grid: list[list[int | str]]
