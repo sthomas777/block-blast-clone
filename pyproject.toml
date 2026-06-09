@@ -8,6 +8,8 @@ dependencies = [
     "asyncpg>=0.31.0",
     "fastapi[standard]>=0.136.3",
     "greenlet>=3.5.1",
+    "pwdlib[argon2]>=0.3.0",
+    "pyjwt>=2.13.0",
     "sqlalchemy>=2.0.50",
     "websockets>=16.0",
 ]
@@ -18,6 +20,7 @@ dev = [
     "pre-commit>=4.6.0",
     "pyrefly>=1.0.0",
     "pytest==9.0.3",
+    "testcontainers[postgres]>=4.14.2",
 ]
 
 [tool.setuptools.packages.find]
@@ -28,6 +31,9 @@ include = ["*"]
 [tool.pytest.ini_options]
 # This helps pytest find the code without needing PYTHONPATH
 pythonpath = ["backend"]
+markers = [
+    "integration: tests that require Docker (real Postgres via testcontainers). Deselect with '-m \"not integration\"'.",
+]
 
 [tool.pyrefly]
 project-includes = [
