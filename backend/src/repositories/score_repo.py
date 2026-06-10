@@ -14,7 +14,7 @@ class ScoreRepository:
     async def save_score(
         self,
         player_id: int,
-        session_id: int,
+        session_id: int | None,
         player_score: int,
         lines_cleared: int,
     ) -> Score:

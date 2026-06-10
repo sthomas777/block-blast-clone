@@ -1,62 +1,11 @@
-from collections.abc import Iterator
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta
 
-import jwt
-import pytest
 from fastapi.testclient import TestClient
 
-from backend.src.api.routes_auth import get_repo
-from backend.src.main import app
-from backend.src.models.player import Player
-from backend.src.services.auth_service import ALGORITHM, hash_password, settings
-
-
-@dataclass
-class FakePlayerRepository:
-    _by_id: dict[int, Player] = field(default_factory=dict)
-    _next_id: int = 1
-
-    def _add(self, username: str, hashed_password: str) -> Player:
-        player = Player(username=username, hashed_password=hashed_password)
-        player.player_id = self._next_id
-        self._next_id += 1
-        self._by_id[player.player_id] = player
-        return player
-
-    def seed(self, username: str, password: str) -> Player:
-        return self._add(username, hash_password(password))
-
-    async def create(self, username: str, hashed_password: str) -> Player:
-        return self._add(username, hashed_password)
-
-    async def get_by_username(self, username: str) -> Player | None:
-        return next((p for p in self._by_id.values() if p.username == username), None)
-
-    async def get_by_id(self, player_id: int) -> Player | None:
-        return self._by_id.get(player_id)
-
-
-@pytest.fixture
-def repo() -> FakePlayerRepository:
-    return FakePlayerRepository()
-
-
-@pytest.fixture
-def client(repo: FakePlayerRepository) -> Iterator[TestClient]:
-    app.dependency_overrides[get_repo] = lambda: repo
-    test_client = TestClient(app)
-    yield test_client
-    app.dependency_overrides.clear()
-
-
-def _make_token(sub: str, expires_delta: timedelta = timedelta(minutes=15)) -> str:
-    payload = {"sub": sub, "exp": datetime.now(timezone.utc) + expires_delta}
-    return jwt.encode(
-        payload,
-        settings.secret_key.get_secret_value(),
-        algorithm=ALGORITHM,
-    )
+from backend.tests.integration.api._auth_helpers import (
+    FakePlayerRepository,
+    make_token,
+)
 
 
 def test_register_returns_player(client: TestClient) -> None:
@@ -122,7 +71,7 @@ def test_me_with_valid_token_returns_200(
     repo: FakePlayerRepository,
 ) -> None:
     player = repo.seed("test", "supersecret")
-    token = _make_token(str(player.player_id))
+    token = make_token(str(player.player_id))
     response = client.get("/api/auth/me", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
     assert response.json()["username"] == "test"
@@ -138,7 +87,7 @@ def test_me_with_invalid_token_returns_401(client: TestClient) -> None:
 
 def test_me_with_valid_token_but_missing_player_returns_404(client: TestClient) -> None:
     # Well-signed token whose player_id no longer exists in the repo.
-    token = _make_token("123")
+    token = make_token("123")
     response = client.get("/api/auth/me", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 404
 
@@ -148,13 +97,13 @@ def test_me_with_expired_token_returns_401(
     repo: FakePlayerRepository,
 ) -> None:
     player = repo.seed("test", "supersecret")
-    token = _make_token(str(player.player_id), expires_delta=timedelta(minutes=-1))
+    token = make_token(str(player.player_id), expires_delta=timedelta(minutes=-1))
     response = client.get("/api/auth/me", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 401
 
 
 def test_me_with_malformed_sub_returns_401(client: TestClient) -> None:
-    token = _make_token("not-an-int")
+    token = make_token("not-an-int")
     response = client.get("/api/auth/me", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 401
 

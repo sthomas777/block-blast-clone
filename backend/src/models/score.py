@@ -16,9 +16,10 @@ class Score(Base):
         autoincrement=True,
     )
     player_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("players.player_id"))
-    session_id: Mapped[int] = mapped_column(
+    session_id: Mapped[int | None] = mapped_column(
         BigInteger,
         ForeignKey("gamesessions.session_id"),
+        nullable=True,
     )
     score: Mapped[int] = mapped_column(BigInteger, default=0)
     lines_cleared: Mapped[int] = mapped_column(BigInteger, default=0)

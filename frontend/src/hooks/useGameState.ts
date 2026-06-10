@@ -56,11 +56,15 @@ interface UseGameStateReturn {
  * components needed to change), but commands go out as WebSocket messages
  * and state updates come from server pushes.
  */
-export function useGameState(): UseGameStateReturn {
+export function useGameState(token?: string | null): UseGameStateReturn {
   const [gameState, setGameState] = useState<GameStateResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const { sendJsonMessage, readyState } = useWebSocket(WS_URL, {
+  // Pass the bearer token as a query param so the backend can attribute the
+  // final score to the player. Changing it reconnects with the new identity.
+  const url = token ? `${WS_URL}?token=${encodeURIComponent(token)}` : WS_URL;
+
+  const { sendJsonMessage, readyState } = useWebSocket(url, {
     shouldReconnect: () => true,
     reconnectInterval: 3000,
     // Handle each server push in the message callback (not a setState-in-effect).
