@@ -25,16 +25,24 @@ async function extractErrorMessage(response: Response): Promise<string> {
 }
 
 /**
- * Typed fetch wrapper: sets JSON headers, throws an Error with a useful
- * message on non-2xx responses, and parses the JSON body as T.
+ * Typed fetch wrapper: sets JSON headers (unless sending a form body), merges
+ * any caller-supplied headers (e.g. Authorization), throws an Error with a
+ * useful message on non-2xx responses, and parses the JSON body as T.
  */
 export async function apiFetch<T>(
   path: string,
-  options?: RequestInit,
+  options: RequestInit = {},
 ): Promise<T> {
+  // The login endpoint expects an OAuth2 form body, not JSON. When the caller
+  // passes URLSearchParams, let the browser set the form Content-Type itself.
+  const isForm = options.body instanceof URLSearchParams;
+
   const response = await fetch(`${API_BASE}${path}`, {
-    headers: { "Content-Type": "application/json" },
     ...options,
+    headers: {
+      ...(isForm ? {} : { "Content-Type": "application/json" }),
+      ...options.headers,
+    },
   });
 
   if (!response.ok) {

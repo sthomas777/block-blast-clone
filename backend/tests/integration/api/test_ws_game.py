@@ -1,8 +1,14 @@
+from unittest.mock import MagicMock
+
 import pytest
 from fastapi.testclient import TestClient
 
 from backend.src.api import ws_game
+from backend.src.core.dependencies import game_service as shared_game_service
+from backend.src.game.session import GameState
+from backend.src.schemas.game import GameStateResponse
 from backend.src.services.game_service import GameService
+from backend.tests.integration.api._auth_helpers import FakeScoreRepository, make_token
 
 
 def test_new_game_returns_state(client: TestClient) -> None:
@@ -113,3 +119,68 @@ def test_socket_survives_unexpected_error(
 
         ws.send_json({"command_type": "new_game"})
         assert len(ws.receive_json()["game_id"]) == 36
+
+
+def _patch_game_over(
+    monkeypatch: pytest.MonkeyPatch,
+    game_id: str,
+    score: int,
+) -> None:
+    """Force dispatch to report game-over and seed a matching session."""
+    session = MagicMock()
+    session.state = GameState.GAME_OVER
+    session.get_score.return_value = score
+    shared_game_service.games[game_id] = session
+
+    def fake_dispatch(
+        raw: dict,
+        gid: str | None,
+        service: GameService,
+    ) -> GameStateResponse:
+        return GameStateResponse(
+            game_id=game_id,
+            status=GameState.GAME_OVER,
+            grid=[[0] * 8 for _ in range(8)],
+            score=score,
+            shape=[],
+            game_over=True,
+        )
+
+    monkeypatch.setattr(ws_game, "dispatch", fake_dispatch)
+
+
+def test_game_over_saves_score_for_authenticated_player(
+    client: TestClient,
+    repo,
+    score_repo: FakeScoreRepository,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    player = repo.seed("test", "supersecret")
+    token = make_token(str(player.player_id))
+    _patch_game_over(monkeypatch, "ws-auth-game", score=120)
+
+    with client.websocket_connect(f"/ws/game?token={token}") as ws:
+        ws.send_json({"command_type": "new_game"})
+        assert ws.receive_json()["game_over"] is True
+
+    saved = score_repo._scores
+    assert len(saved) == 1
+    assert saved[0].player_id == player.player_id
+    assert saved[0].score == 120
+    assert saved[0].lines_cleared == 12  # 120 // 10
+    assert "ws-auth-game" not in shared_game_service.games  # cleaned up
+
+
+def test_game_over_anonymous_cleans_up_without_saving(
+    client: TestClient,
+    score_repo: FakeScoreRepository,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _patch_game_over(monkeypatch, "ws-anon-game", score=50)
+
+    with client.websocket_connect("/ws/game") as ws:  # no token
+        ws.send_json({"command_type": "new_game"})
+        assert ws.receive_json()["game_over"] is True
+
+    assert score_repo._scores == []
+    assert "ws-anon-game" not in shared_game_service.games  # still cleaned up

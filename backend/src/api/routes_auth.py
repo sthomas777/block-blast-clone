@@ -2,25 +2,19 @@ from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.src.core.database import get_session
+from backend.src.core.dependencies import get_authenticated_player, get_repo
+from backend.src.models.player import Player
 from backend.src.repositories.player_repo import PlayerRepository
 from backend.src.schemas.auth import AuthResponse, PlayerResponse, RegisterRequest
 from backend.src.services.auth_service import (
     create_access_token,
     hash_password,
-    oauth2_scheme,
     settings,
-    verify_access_token,
     verify_password,
 )
 
 router = APIRouter(prefix="/api/auth")
-
-
-def get_repo(session: AsyncSession = Depends(get_session)) -> PlayerRepository:
-    return PlayerRepository(session)
 
 
 @router.post("/register", response_model=PlayerResponse)
@@ -58,25 +52,6 @@ async def login(
 
 @router.get("/me", response_model=PlayerResponse)
 async def get_current_player(
-    token: str = Depends(oauth2_scheme),
-    repo: PlayerRepository = Depends(get_repo),
+    player: Player = Depends(get_authenticated_player),
 ) -> PlayerResponse:
-    player_id = verify_access_token(token)
-    if not player_id:
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid or expired token",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    try:
-        player_id_int = int(player_id)
-    except (TypeError, ValueError):
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid or expired token",
-            headers={"WWW-Authenticate": "Bearer"},
-        ) from None
-    player = await repo.get_by_id(player_id_int)
-    if not player:
-        raise HTTPException(status_code=404, detail="User not found")
     return PlayerResponse(player_id=player.player_id, username=player.username)

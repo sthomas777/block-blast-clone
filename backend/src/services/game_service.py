@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from uuid import uuid4
-from backend.src.game.session import GameSession
+from backend.src.game.session import GameSession, GameState
+from backend.src.repositories.score_repo import ScoreRepository
 from backend.src.schemas.game import (
     GameStateResponse,
     GameStateMLResponse,
@@ -98,3 +99,25 @@ class GameService:
             shape=available_shape,
             game_over=game_over,
         )
+
+    async def end_game(
+        self,
+        game_id: str,
+        score_repo: ScoreRepository,
+        player_id: int | None = None,
+    ) -> None:
+        session = self.games.get(game_id)
+        if not session or session.state != GameState.GAME_OVER:
+            return
+        if player_id is not None:
+            score = session.get_score()
+            await score_repo.save_score(
+                player_id=player_id,
+                session_id=None,
+                player_score=score,
+                # Scoring awards 10 points per cleared line. Add a dedicated
+                # lines-cleared counter to the session if combos are introduced.
+                lines_cleared=score // 10,
+            )
+        # Clean up the in-memory game
+        del self.games[game_id]
