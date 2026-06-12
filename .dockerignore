@@ -1,0 +1,18 @@
+# Python
+__pycache__
+*.pyc
+.venv
+.pytest_cache
+.ruff_cache
+
+# Tests aren't needed in the runtime image
+backend/tests/
+
+# VCS / tooling
+.git
+.idea
+.coverage
+
+# Frontend isn't part of the backend image
+frontend/
+node_modules/
