@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import (
 )
 from testcontainers.postgres import PostgresContainer
 
-from backend.src.core.database import Base
+from src.core.database import Base
 
 # Hosts the destructive schema reset (drop_all) is ever allowed to touch.
 # A testcontainer is always published on the local loopback interface.

@@ -2,9 +2,9 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from backend.src.core import lifespan as lifespan_module
-from backend.src.core.database import Base
-from backend.src.core.lifespan import lifespan
+from src.core import lifespan as lifespan_module
+from src.core.database import Base
+from src.core.lifespan import lifespan
 
 pytestmark = pytest.mark.anyio
 

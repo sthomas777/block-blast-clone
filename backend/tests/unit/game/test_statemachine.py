@@ -2,7 +2,7 @@ from enum import Enum, auto
 
 import pytest
 
-from backend.src.game.statemachine import StateMachine, InvalidTransaction
+from src.game.statemachine import StateMachine, InvalidTransaction
 
 
 def test_add_transition() -> None:

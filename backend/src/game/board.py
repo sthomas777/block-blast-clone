@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from backend.src.models.board import BlockBlastBoard
+from src.models.board import BlockBlastBoard
 
 
 @dataclass

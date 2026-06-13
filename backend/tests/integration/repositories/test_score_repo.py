@@ -1,9 +1,9 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.src.models.game_session import GameSession
-from backend.src.models.player import Player
-from backend.src.repositories.score_repo import ScoreRepository
+from src.models.game_session import GameSession
+from src.models.player import Player
+from src.repositories.score_repo import ScoreRepository
 
 pytestmark = [pytest.mark.anyio, pytest.mark.integration]
 

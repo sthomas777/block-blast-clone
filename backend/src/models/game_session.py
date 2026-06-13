@@ -5,7 +5,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 
-from backend.src.core.database import Base
+from src.core.database import Base
 
 
 class GameSession(Base):

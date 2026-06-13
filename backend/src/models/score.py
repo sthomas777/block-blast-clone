@@ -4,7 +4,7 @@ from sqlalchemy import BigInteger, DateTime, func, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
 
-from backend.src.core.database import Base
+from src.core.database import Base
 
 
 class Score(Base):

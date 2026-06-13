@@ -4,12 +4,12 @@ from fastapi import APIRouter, Depends, Query, WebSocket, WebSocketDisconnect
 from fastapi.encoders import jsonable_encoder
 from pydantic import ValidationError
 
-from backend.src.core.dependencies import get_game_service, get_score_repo
-from backend.src.repositories.score_repo import ScoreRepository
-from backend.src.schemas.game import ErrorResponse
-from backend.src.services.auth_service import verify_access_token
-from backend.src.services.game_service import GameError, GameService
-from backend.src.services.ws_handler import dispatch
+from src.core.dependencies import get_game_service, get_score_repo
+from src.repositories.score_repo import ScoreRepository
+from src.schemas.game import ErrorResponse
+from src.services.auth_service import verify_access_token
+from src.services.game_service import GameError, GameService
+from src.services.ws_handler import dispatch
 
 logger = logging.getLogger(__name__)
 

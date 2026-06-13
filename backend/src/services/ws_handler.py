@@ -1,12 +1,12 @@
 from pydantic import TypeAdapter
 
-from backend.src.schemas.game import (
+from src.schemas.game import (
     ClientMessage,
     GameStateResponse,
     NewGameCommand,
     PlaceShapeCommand,
 )
-from backend.src.services.game_service import GameService, InvalidGameID
+from src.services.game_service import GameService, InvalidGameID
 
 # Built once at import time. Validates a raw dict into the right command model
 # based on its "command_type" discriminator, raising ValidationError on bad input.

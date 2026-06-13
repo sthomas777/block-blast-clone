@@ -1,9 +1,9 @@
-from backend.src.game.board import GameBoard
-from backend.src.game.constants import SHAPES
-from backend.src.game.engine import GameEngine
-from backend.src.game.scoring import ScoringEngine
-from backend.src.game.shapes import ShapeManager
-from backend.src.models.shape import BlockBlastShape
+from src.game.board import GameBoard
+from src.game.constants import SHAPES
+from src.game.engine import GameEngine
+from src.game.scoring import ScoringEngine
+from src.game.shapes import ShapeManager
+from src.models.shape import BlockBlastShape
 
 
 # Hardcoded shapes to avoid flaky tests

@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from random import choice
-from backend.src.models.shape import BlockBlastShape
+from src.models.shape import BlockBlastShape
 
 
 @dataclass

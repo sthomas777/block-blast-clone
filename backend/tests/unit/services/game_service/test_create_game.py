@@ -1,5 +1,5 @@
-from backend.src.game.session import GameState
-from backend.src.services.game_service import GameService
+from src.game.session import GameState
+from src.services.game_service import GameService
 
 EMPTY_GRID = [
     [0, 0, 0, 0, 0, 0, 0, 0],

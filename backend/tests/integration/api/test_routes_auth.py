@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from fastapi.testclient import TestClient
 
-from backend.tests.integration.api._auth_helpers import (
+from tests.integration.api._auth_helpers import (
     FakePlayerRepository,
     make_token,
 )

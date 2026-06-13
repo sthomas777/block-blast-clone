@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from backend.src.models.shape import BlockBlastShape
+from src.models.shape import BlockBlastShape
 
 BASE_SHAPES = [
     BlockBlastShape("I", [(0, 0), (0, 1), (0, 2), (0, 3)], "#00f0f0"),

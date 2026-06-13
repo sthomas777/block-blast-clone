@@ -3,8 +3,8 @@ from dataclasses import dataclass
 from sqlalchemy import select, Sequence
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.src.models.player import Player
-from backend.src.models.score import Score
+from src.models.player import Player
+from src.models.score import Score
 
 
 @dataclass

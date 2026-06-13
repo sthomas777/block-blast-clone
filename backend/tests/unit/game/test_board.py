@@ -1,4 +1,4 @@
-from backend.src.game.board import GameBoard
+from src.game.board import GameBoard
 
 
 def test_init() -> None:

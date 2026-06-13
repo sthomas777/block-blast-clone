@@ -1,5 +1,5 @@
 import pytest
-from backend.src.game.session import GameSession
+from src.game.session import GameSession
 
 
 @pytest.fixture

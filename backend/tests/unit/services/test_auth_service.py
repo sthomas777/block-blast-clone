@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 import jwt
 import pytest
 
-from backend.src.services.auth_service import (
+from src.services.auth_service import (
     ALGORITHM,
     create_access_token,
     hash_password,

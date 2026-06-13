@@ -3,9 +3,9 @@ from datetime import datetime
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.src.models.game_session import GameSession
-from backend.src.models.player import Player
-from backend.src.repositories.game_session_repo import GameSessionRepository
+from src.models.game_session import GameSession
+from src.models.player import Player
+from src.repositories.game_session_repo import GameSessionRepository
 
 pytestmark = [pytest.mark.anyio, pytest.mark.integration]
 

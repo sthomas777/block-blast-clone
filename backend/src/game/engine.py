@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-from backend.src.game.board import GameBoard
-from backend.src.game.shapes import ShapeManager
-from backend.src.game.scoring import ScoringEngine
-from backend.src.models.shape import BlockBlastShape
+from src.game.board import GameBoard
+from src.game.shapes import ShapeManager
+from src.game.scoring import ScoringEngine
+from src.models.shape import BlockBlastShape
 
 
 @dataclass

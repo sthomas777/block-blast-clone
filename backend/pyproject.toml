@@ -24,18 +24,20 @@ dev = [
 ]
 
 [tool.setuptools.packages.find]
-# This tells Python: "Treat backend/src as the root for imports"
-where = ["backend"]
-include = ["*"]
+# backend/ is the project root; the importable package is `src`.
+where = ["."]
+include = ["src*"]
 
 [tool.pytest.ini_options]
-# This helps pytest find the code without needing PYTHONPATH
-pythonpath = ["backend"]
+# Put the project root (backend/) on sys.path so `import src` / `import tests` work.
+pythonpath = ["."]
 markers = [
     "integration: tests that require Docker (real Postgres via testcontainers). Deselect with '-m \"not integration\"'.",
 ]
 
 [tool.pyrefly]
+# backend/ is the import root, so `src` resolves as a package.
+search-path = ["."]
 project-includes = [
     "**/*.py*",
     "**/*.ipynb",
