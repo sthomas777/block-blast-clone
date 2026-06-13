@@ -1,9 +1,9 @@
 import pytest
 from pydantic import ValidationError
 
-from backend.src.schemas.game import GameStateResponse
-from backend.src.services.game_service import GameService, InvalidGameID
-from backend.src.services.ws_handler import dispatch
+from src.schemas.game import GameStateResponse
+from src.services.game_service import GameService, InvalidGameID
+from src.services.ws_handler import dispatch
 
 
 def test_new_game_creates_game() -> None:

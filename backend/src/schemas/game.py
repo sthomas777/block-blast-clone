@@ -2,8 +2,8 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field
 
-from backend.src.game.session import GameState
-from backend.src.models.shape import BlockBlastShape
+from src.game.session import GameState
+from src.models.shape import BlockBlastShape
 
 
 class NewGameCommand(BaseModel):

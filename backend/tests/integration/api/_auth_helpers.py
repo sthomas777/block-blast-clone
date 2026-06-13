@@ -5,9 +5,9 @@ from datetime import datetime, timedelta, timezone
 
 import jwt
 
-from backend.src.models.player import Player
-from backend.src.models.score import Score
-from backend.src.services.auth_service import ALGORITHM, hash_password, settings
+from src.models.player import Player
+from src.models.score import Score
+from src.services.auth_service import ALGORITHM, hash_password, settings
 
 
 @dataclass

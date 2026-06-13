@@ -1,9 +1,9 @@
 import pytest
 
-from backend.src.game.session import GameState
-from backend.src.models.shape import BlockBlastShape
-from backend.src.schemas.game import GameStateResponse
-from backend.src.services.game_service import (
+from src.game.session import GameState
+from src.models.shape import BlockBlastShape
+from src.schemas.game import GameStateResponse
+from src.services.game_service import (
     GameService,
     InvalidGameID,
     InvalidPosition,

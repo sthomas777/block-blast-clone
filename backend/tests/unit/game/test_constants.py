@@ -1,13 +1,13 @@
 import pytest
 
-from backend.src.game.constants import (
+from src.game.constants import (
     COL_GRID_SIZE,
     ROW_GRID_SIZE,
     BASE_SHAPES,
     generate_library,
     SHAPES,
 )
-from backend.src.models.shape import BlockBlastShape
+from src.models.shape import BlockBlastShape
 
 
 def test_grid_size() -> None:
@@ -35,7 +35,8 @@ def test_grid_size() -> None:
             BlockBlastShape("L", [(0, 0), (1, 0), (2, 0), (2, 1)], "#f0a000"),
         ),
         pytest.param(
-            4, BlockBlastShape("J", [(0, 1), (1, 1), (2, 1), (2, 0)], "#0000f0")
+            4,
+            BlockBlastShape("J", [(0, 1), (1, 1), (2, 1), (2, 0)], "#0000f0"),
         ),
         pytest.param(
             6,

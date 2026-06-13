@@ -1,6 +1,6 @@
-from backend.src.game.constants import SHAPES
-from backend.src.game.shapes import ShapeManager
-from backend.src.models.shape import BlockBlastShape
+from src.game.constants import SHAPES
+from src.game.shapes import ShapeManager
+from src.models.shape import BlockBlastShape
 
 
 # Hardcoded shapes to avoid flaky tests
@@ -17,7 +17,7 @@ def test_init() -> None:
 
 def test_generate_new_set() -> None:
     manager = ShapeManager(
-        {SHAPE_I.name: SHAPE_I, SHAPE_O.name: SHAPE_O, SHAPE_T.name: SHAPE_T}
+        {SHAPE_I.name: SHAPE_I, SHAPE_O.name: SHAPE_O, SHAPE_T.name: SHAPE_T},
     )
     shapes = manager.generate_new_set()
     assert len(shapes) == 3
@@ -26,7 +26,7 @@ def test_generate_new_set() -> None:
 
 def test_remove_shape() -> None:
     manager = ShapeManager(
-        {SHAPE_I.name: SHAPE_I, SHAPE_O.name: SHAPE_O, SHAPE_T.name: SHAPE_T}
+        {SHAPE_I.name: SHAPE_I, SHAPE_O.name: SHAPE_O, SHAPE_T.name: SHAPE_T},
     )
     manager.current_shapes = [SHAPE_I, SHAPE_O, SHAPE_T]
     manager.remove_shape(SHAPE_I)
@@ -42,7 +42,7 @@ def test_has_shapes() -> None:
 
 def test_get_current_shapes() -> None:
     manager = ShapeManager(
-        {SHAPE_I.name: SHAPE_I, SHAPE_O.name: SHAPE_O, SHAPE_T.name: SHAPE_T}
+        {SHAPE_I.name: SHAPE_I, SHAPE_O.name: SHAPE_O, SHAPE_T.name: SHAPE_T},
     )
     manager.current_shapes = [SHAPE_I, SHAPE_O, SHAPE_T]
     shapes = manager.get_current_shapes()

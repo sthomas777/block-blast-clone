@@ -3,11 +3,11 @@ from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
-from backend.src.core.dependencies import get_authenticated_player, get_repo
-from backend.src.models.player import Player
-from backend.src.repositories.player_repo import PlayerRepository
-from backend.src.schemas.auth import AuthResponse, PlayerResponse, RegisterRequest
-from backend.src.services.auth_service import (
+from src.core.dependencies import get_authenticated_player, get_repo
+from src.models.player import Player
+from src.repositories.player_repo import PlayerRepository
+from src.schemas.auth import AuthResponse, PlayerResponse, RegisterRequest
+from src.services.auth_service import (
     create_access_token,
     hash_password,
     settings,

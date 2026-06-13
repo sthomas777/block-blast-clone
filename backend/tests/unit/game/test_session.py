@@ -1,9 +1,9 @@
-from backend.src.game.session import GameSession
-from backend.src.models.shape import BlockBlastShape
-from backend.src.game.board import GameBoard
-from backend.src.game.shapes import ShapeManager
-from backend.src.game.scoring import ScoringEngine
-from backend.src.game.engine import GameEngine
+from src.game.session import GameSession
+from src.models.shape import BlockBlastShape
+from src.game.board import GameBoard
+from src.game.shapes import ShapeManager
+from src.game.scoring import ScoringEngine
+from src.game.engine import GameEngine
 
 
 # Hardcoded shapes to avoid flaky tests
@@ -115,7 +115,7 @@ def test_game_over_event() -> None:
 
 
 def test_place_current_shape_none() -> None:
-    from backend.src.game.session import GameContext, place_current_shape
+    from src.game.session import GameContext, place_current_shape
 
     board = GameBoard(rows=6, cols=6)
     shape_manager = ShapeManager({SHAPE_I.name: SHAPE_I})

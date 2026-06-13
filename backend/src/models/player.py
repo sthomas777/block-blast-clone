@@ -4,7 +4,7 @@ from sqlalchemy import BigInteger, String, DateTime, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 
-from backend.src.core.database import Base
+from src.core.database import Base
 
 
 class Player(Base):

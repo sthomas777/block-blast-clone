@@ -1,4 +1,4 @@
-from backend.src.game.scoring import ScoringEngine
+from src.game.scoring import ScoringEngine
 
 
 def test_init() -> None:

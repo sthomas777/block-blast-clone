@@ -1,12 +1,12 @@
 from fastapi import Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.src.core.database import get_session
-from backend.src.models.player import Player
-from backend.src.repositories.player_repo import PlayerRepository
-from backend.src.repositories.score_repo import ScoreRepository
-from backend.src.services.auth_service import oauth2_scheme, verify_access_token
-from backend.src.services.game_service import GameService
+from src.core.database import get_session
+from src.models.player import Player
+from src.repositories.player_repo import PlayerRepository
+from src.repositories.score_repo import ScoreRepository
+from src.services.auth_service import oauth2_scheme, verify_access_token
+from src.services.game_service import GameService
 
 game_service = GameService()
 

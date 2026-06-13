@@ -1,6 +1,6 @@
 import pytest
-from backend.src.schemas.game import GameStateMLResponse
-from backend.src.services.game_service import GameService, InvalidGameID
+from src.schemas.game import GameStateMLResponse
+from src.services.game_service import GameService, InvalidGameID
 
 EMPTY_GRID = [
     [0, 0, 0, 0, 0, 0, 0, 0],

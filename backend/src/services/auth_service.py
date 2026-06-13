@@ -6,7 +6,7 @@ import jwt
 from fastapi.security import OAuth2PasswordBearer
 from pwdlib import PasswordHash
 
-from backend.src.schemas.auth import AuthSettings
+from src.schemas.auth import AuthSettings
 
 ALGORITHM = "HS256"
 

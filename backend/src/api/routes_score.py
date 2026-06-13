@@ -2,11 +2,11 @@ from collections.abc import Sequence
 
 from fastapi import APIRouter, Depends
 
-from backend.src.core.dependencies import get_authenticated_player, get_score_repo
-from backend.src.models.player import Player
-from backend.src.models.score import Score
-from backend.src.repositories.score_repo import ScoreRepository
-from backend.src.schemas.score import ScoreResponse
+from src.core.dependencies import get_authenticated_player, get_score_repo
+from src.models.player import Player
+from src.models.score import Score
+from src.repositories.score_repo import ScoreRepository
+from src.schemas.score import ScoreResponse
 
 router = APIRouter(prefix="/api/scores")
 

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.src.models.game_session import GameSession
+from src.models.game_session import GameSession
 
 
 @dataclass

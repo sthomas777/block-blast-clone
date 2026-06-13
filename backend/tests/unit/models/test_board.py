@@ -2,7 +2,7 @@ from typing import Iterator
 
 import pytest
 
-from backend.src.models.board import BlockBlastBoard
+from src.models.board import BlockBlastBoard
 
 
 def test_create_grid() -> None:

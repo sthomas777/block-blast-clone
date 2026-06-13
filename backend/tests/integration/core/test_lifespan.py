@@ -4,12 +4,12 @@ import pytest
 from sqlalchemy import inspect
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from backend.src.core import lifespan as lifespan_module
-from backend.src.core.database import Base
-from backend.src.core.lifespan import lifespan
-from backend.src.models.game_session import GameSession
-from backend.src.models.player import Player
-from backend.src.models.score import Score
+from src.core import lifespan as lifespan_module
+from src.core.database import Base
+from src.core.lifespan import lifespan
+from src.models.game_session import GameSession
+from src.models.player import Player
+from src.models.score import Score
 
 pytestmark = [pytest.mark.anyio, pytest.mark.integration]
 

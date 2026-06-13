@@ -6,8 +6,8 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from backend.src.core import database
-from backend.src.core.database import get_session
+from src.core import database
+from src.core.database import get_session
 
 pytestmark = [pytest.mark.anyio, pytest.mark.integration]
 

@@ -1,4 +1,4 @@
-from backend.src.models.shape import BlockBlastShape
+from src.models.shape import BlockBlastShape
 
 
 def test_shape_model() -> None:

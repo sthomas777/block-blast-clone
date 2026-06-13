@@ -2,11 +2,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from backend.src.api.routes_auth import router as auth_router
-from backend.src.api.routes_score import router as score_router
-from backend.src.api.ws_game import router as ws_game_router
-from backend.src.core.lifespan import lifespan
-from backend.src.services.game_service import InvalidGameID, InvalidPosition
+from src.api.routes_auth import router as auth_router
+from src.api.routes_score import router as score_router
+from src.api.ws_game import router as ws_game_router
+from src.core.lifespan import lifespan
+from src.services.game_service import InvalidGameID, InvalidPosition
 
 
 app = FastAPI(title="Block Blast API", version="0.1.0", lifespan=lifespan)

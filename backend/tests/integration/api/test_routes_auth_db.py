@@ -4,10 +4,10 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.src.core.database import get_session
-from backend.src.main import app
-from backend.src.models.game_session import GameSession
-from backend.src.repositories.score_repo import ScoreRepository
+from src.core.database import get_session
+from src.main import app
+from src.models.game_session import GameSession
+from src.repositories.score_repo import ScoreRepository
 
 pytestmark = [pytest.mark.anyio, pytest.mark.integration]
 

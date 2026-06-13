@@ -4,8 +4,8 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import DeclarativeBase
 
-from backend.src.core import database
-from backend.src.core.database import Base, get_session
+from src.core import database
+from src.core.database import Base, get_session
 
 
 def test_base_is_declarative_base() -> None:

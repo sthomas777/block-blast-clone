@@ -3,12 +3,12 @@ from unittest.mock import MagicMock
 import pytest
 from fastapi.testclient import TestClient
 
-from backend.src.api import ws_game
-from backend.src.core.dependencies import game_service as shared_game_service
-from backend.src.game.session import GameState
-from backend.src.schemas.game import GameStateResponse
-from backend.src.services.game_service import GameService
-from backend.tests.integration.api._auth_helpers import FakeScoreRepository, make_token
+from src.api import ws_game
+from src.core.dependencies import game_service as shared_game_service
+from src.game.session import GameState
+from src.schemas.game import GameStateResponse
+from src.services.game_service import GameService
+from tests.integration.api._auth_helpers import FakeScoreRepository, make_token
 
 
 def test_new_game_returns_state(client: TestClient) -> None:

@@ -3,9 +3,9 @@ from collections.abc import Iterator
 import pytest
 from fastapi.testclient import TestClient
 
-from backend.src.core.dependencies import get_repo, get_score_repo
-from backend.src.main import app
-from backend.tests.integration.api._auth_helpers import (
+from src.core.dependencies import get_repo, get_score_repo
+from src.main import app
+from tests.integration.api._auth_helpers import (
     FakePlayerRepository,
     FakeScoreRepository,
 )

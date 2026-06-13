@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 from uuid import uuid4
-from backend.src.game.session import GameSession, GameState
-from backend.src.repositories.score_repo import ScoreRepository
-from backend.src.schemas.game import (
+from src.game.session import GameSession, GameState
+from src.repositories.score_repo import ScoreRepository
+from src.schemas.game import (
     GameStateResponse,
     GameStateMLResponse,
 )

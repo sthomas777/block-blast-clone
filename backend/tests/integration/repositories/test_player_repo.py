@@ -2,7 +2,7 @@ import pytest
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.src.repositories.player_repo import PlayerRepository
+from src.repositories.player_repo import PlayerRepository
 
 pytestmark = [pytest.mark.anyio, pytest.mark.integration]
 

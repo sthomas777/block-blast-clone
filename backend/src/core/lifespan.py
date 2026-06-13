@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from backend.src.core.database import Base, engine
+from src.core.database import Base, engine
 
 
 @asynccontextmanager

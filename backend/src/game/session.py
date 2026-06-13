@@ -2,13 +2,13 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Callable
 
-from backend.src.game.board import GameBoard
-from backend.src.game.engine import GameEngine
-from backend.src.game.shapes import ShapeManager
-from backend.src.game.scoring import ScoringEngine
-from backend.src.game.statemachine import StateMachine
-from backend.src.models.shape import BlockBlastShape
-from backend.src.game.constants import SHAPES
+from src.game.board import GameBoard
+from src.game.engine import GameEngine
+from src.game.shapes import ShapeManager
+from src.game.scoring import ScoringEngine
+from src.game.statemachine import StateMachine
+from src.models.shape import BlockBlastShape
+from src.game.constants import SHAPES
 
 
 class GameState(Enum):
