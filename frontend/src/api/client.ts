@@ -2,7 +2,7 @@
 // The game itself runs over WebSocket (see hooks/useGameState.ts); this client
 // is for the remaining REST endpoints — auth and leaderboard.
 
-export const API_BASE = "http://localhost:8000";
+export const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 /** Shape of the error bodies our FastAPI backend returns. */
 interface ApiErrorBody {

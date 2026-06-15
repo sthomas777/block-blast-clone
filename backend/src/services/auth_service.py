@@ -6,11 +6,12 @@ import jwt
 from fastapi.security import OAuth2PasswordBearer
 from pwdlib import PasswordHash
 
+from src.core.secrets import read_secret
 from src.schemas.auth import AuthSettings
 
 ALGORITHM = "HS256"
 
-SECRET_KEY: str = os.environ["SECRET_KEY"]
+SECRET_KEY: str = read_secret("secret_key")
 ACCESS_TOKEN_EXPIRE_MINUTES: int = int(
     os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES", "15"),
 )
