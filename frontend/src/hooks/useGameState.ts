@@ -12,7 +12,7 @@ const useWebSocket: UseWebSocketHook =
   (useWebSocketImport as unknown as { default?: UseWebSocketHook }).default ??
   useWebSocketImport;
 
-const WS_URL = "ws://localhost:8000/ws/game";
+const WS_URL = import.meta.env.VITE_WS_URL || "ws://localhost:8000/ws/game";
 
 /**
  * The two kinds of message the server sends back:
