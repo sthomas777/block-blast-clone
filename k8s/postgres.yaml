@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-data
+  namespace: blockblast
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: blockblast
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: postgres
+          image: postgres:18
+          ports:
+            - containerPort: 5432
+          env:
+            # Read credentials from the mounted Secret via the postgres image's
+            # *_FILE convention. PGUSER lets the readiness probe authenticate.
+            - name: POSTGRES_USER_FILE
+              value: /run/secrets/db_user
+            - name: POSTGRES_PASSWORD_FILE
+              value: /run/secrets/db_password
+            - name: POSTGRES_DB_FILE
+              value: /run/secrets/db_name
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: blockblast-secrets
+                  key: db_user
+          volumeMounts:
+            - name: secrets
+              mountPath: /run/secrets
+              readOnly: true
+            - name: data
+              mountPath: /var/lib/postgresql
+          readinessProbe:
+            exec:
+              command: ["pg_isready"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: secrets
+          secret:
+            secretName: blockblast-secrets
+        - name: data
+          persistentVolumeClaim:
+            claimName: postgres-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: blockblast
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
