@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: blockblast
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      automountServiceAccountToken: false
+      # Don't start the app until Postgres is accepting connections, so the
+      # startup schema creation (lifespan) doesn't fail on a cold cluster.
+      initContainers:
+        - name: wait-for-postgres
+          image: postgres:18
+          command:
+            - sh
+            - -c
+            - "until pg_isready -h postgres -p 5432; do echo waiting for postgres; sleep 2; done"
+      containers:
+        - name: backend
+          image: blockblast-backend:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          env:
+            # The DB host is the Postgres Service name; user/password/name and
+            # the JWT secret come from the mounted Secret (read_secret reads
+            # them from /run/secrets/<key>).
+            - name: DB_HOST
+              value: "postgres"
+            - name: CORS_ORIGINS
+              value: "http://localhost:3000"
+          volumeMounts:
+            - name: secrets
+              mountPath: /run/secrets
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 3
+            periodSeconds: 5
+      volumes:
+        - name: secrets
+          secret:
+            secretName: blockblast-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: blockblast
+spec:
+  selector:
+    app: backend
+  ports:
+    - port: 8000
+      targetPort: 8000
