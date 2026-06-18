@@ -14,8 +14,6 @@ spec:
         app: backend
     spec:
       automountServiceAccountToken: false
-      # Don't start the app until Postgres is accepting connections, so the
-      # startup schema creation (lifespan) doesn't fail on a cold cluster.
       initContainers:
         - name: wait-for-postgres
           image: postgres:18
@@ -23,6 +21,22 @@ spec:
             - sh
             - -c
             - "until pg_isready -h postgres -p 5432; do echo waiting for postgres; sleep 2; done"
+        - name: init-db
+          image: postgres:18
+          command: ["sh", "-c"]
+          args:
+            - |
+              export PGPASSWORD=$(cat /run/secrets/db_password)
+              psql -h postgres \
+                   -U $(cat /run/secrets/db_user) \
+                   -d $(cat /run/secrets/db_name) \
+                   -f /scripts/schema.sql
+          volumeMounts:
+            - name: secrets
+              mountPath: /run/secrets
+              readOnly: true
+            - name: schema
+              mountPath: /scripts
       containers:
         - name: backend
           image: blockblast-backend:latest
@@ -36,7 +50,7 @@ spec:
             - name: DB_HOST
               value: "postgres"
             - name: CORS_ORIGINS
-              value: "http://localhost:3000"
+              value: "*"
           volumeMounts:
             - name: secrets
               mountPath: /run/secrets
@@ -51,6 +65,9 @@ spec:
         - name: secrets
           secret:
             secretName: blockblast-secrets
+        - name: schema
+          configMap:
+            name: db-schema
 ---
 apiVersion: v1
 kind: Service
