@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-schema
+  namespace: blockblast
+data:
+  schema.sql: |
+    CREATE TABLE IF NOT EXISTS players (
+        player_id BIGSERIAL PRIMARY KEY,
+        username  VARCHAR(50) UNIQUE NOT NULL,
+        hashed_password TEXT NOT NULL,
+        total_score BIGINT DEFAULT 0,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS gamesessions (
+        session_id  BIGSERIAL PRIMARY KEY,
+        player_id   BIGINT REFERENCES players(player_id),
+        final_grid  JSONB NOT NULL,
+        shapes_placed INT NOT NULL,
+        lines_cleared INT NOT NULL,
+        status      INT NOT NULL,
+        started_at  TIMESTAMP DEFAULT NOW(),
+        ended_at    TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS scores (
+        score_id    BIGSERIAL PRIMARY KEY,
+        player_id   BIGINT REFERENCES players(player_id),
+        session_id  BIGINT REFERENCES gamesessions(session_id),
+        score       BIGINT DEFAULT 0,
+        lines_cleared BIGINT DEFAULT 0,
+        achieved_at TIMESTAMPTZ DEFAULT NOW()
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_scores_score_desc ON scores(score DESC);
