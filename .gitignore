@@ -17,3 +17,5 @@ blockblast_backend.egg-info/
 
 # Docker secrets (never commit real secret values)
 secrets/
+
+coverage/
