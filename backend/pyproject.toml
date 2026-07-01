@@ -21,6 +21,7 @@ dev = [
     "pyrefly>=1.0.0",
     "pytest==9.0.3",
     "pytest-cov>=6.0.0",
+    "ruff>=0.15.14",
     "testcontainers[postgres]>=4.14.2",
 ]
 
