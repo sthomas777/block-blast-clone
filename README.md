@@ -38,6 +38,10 @@ Register/Sign in and play the block blast clone.
 
 ### Demo
 
+
+https://github.com/user-attachments/assets/914815b4-579d-4ed0-903a-275b9cae7091
+
+
 ### Running Tests
 
 Use the following commands to run tests:
