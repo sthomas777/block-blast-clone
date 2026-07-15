@@ -2,7 +2,7 @@
 
 # Overview
 
-This is a fun little block blast clone I decided to create over the summer after the recovery of my ear surgery. This project was designed using all the principles I learned from my internship at Rapid7. In addition, I wanted to deepen my technical knowledge by learning new technologies.
+This is a fun little block blast clone I decided to create over the summer. This project was designed using all the principles I learned from my internship. In addition, I wanted to deepen my technical knowledge by learning new technologies.
 More info: WHY_THIS_PROJECT.md
 
 ## Prerequisites
